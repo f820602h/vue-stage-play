@@ -27,5 +27,8 @@ type VoiceOverOptions = {
   voiceOverDoneButtonText?: string;
 };
 
+export type GlobalOptions = SpotlightOptions &
+  SpotlightOptions &
+  VoiceOverOptions;
 export type SpotlightProps = SpotlightOptions;
 export type SceneProps = ActOptions & CameraOptions & VoiceOverOptions;

@@ -6,55 +6,83 @@ const { action } = useAct("test");
 </script>
 
 <template>
-  <div class="container">
-    <button @click="action()">start</button>
-    <div v-for="i in 10" :key="i" class="card">
-      <h1 class="title">Max</h1>
-      <button>123</button>
-      <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam
-        voluptatibus, quibusdam, quia, quae voluptatem voluptatum quod
-        exercitationem quos voluptates quas doloribus. Quisquam voluptatibus,
-        quibusdam, quia, quae voluptatem voluptatum quod exercitationem quos
-        voluptates quas doloribus.
-      </p>
+  <div>
+    <div class="action">
+      <button @click="action()">Test</button>
     </div>
 
-    <VueTrailerScene :act-name="'test'" :scene-number="1" style="margin: 10px">
-      <template #default="slotProp">
-        <div class="card">
-          <VueTrailerScene :act-name="'test'" :scene-number="2">
-            <h1 ref="title" class="title">Max</h1>
-            <template #voHeader>
-              <div @click="slotProp.cut">Test</div>
-            </template>
-          </VueTrailerScene>
-          <button>123</button>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam
-            voluptatibus, quibusdam, quia, quae voluptatem voluptatum quod
-            exercitationem quos voluptates quas doloribus. Quisquam
-            voluptatibus, quibusdam, quia, quae voluptatem voluptatum quod
-            exercitationem quos voluptates quas doloribus.
-          </p>
-        </div>
-      </template>
-    </VueTrailerScene>
+    <div class="container">
+      <div v-for="i in 10" :key="i" class="card">
+        <h1 class="title">Max</h1>
+        <p>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam
+          voluptatibus, quibusdam, quia, quae voluptatem voluptatum quod
+          exercitationem quos voluptates quas doloribus. Quisquam voluptatibus,
+          quibusdam, quia, quae voluptatem voluptatum quod exercitationem quos
+          voluptates quas doloribus.
+        </p>
+      </div>
 
-    <div v-for="i in 20" :key="i" class="card">
-      <h1 class="title">Max</h1>
-      <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam
-        voluptatibus, quibusdam, quia, quae voluptatem voluptatum quod
-        exercitationem quos voluptates quas doloribus. Quisquam voluptatibus,
-        quibusdam, quia, quae voluptatem voluptatum quod exercitationem quos
-        voluptates quas doloribus.
-      </p>
+      <VueTrailerScene :act-name="'test'" :scene-number="1">
+        <template #default="slotProp">
+          <div class="card">
+            <VueTrailerScene :act-name="'test'" :scene-number="2">
+              <h1 ref="title" class="title">Max</h1>
+              <template #voHeader>
+                <div @click="slotProp.cut">Test</div>
+              </template>
+            </VueTrailerScene>
+            <p>
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam
+              voluptatibus, quibusdam, quia, quae voluptatem voluptatum quod
+              exercitationem quos voluptates quas doloribus. Quisquam
+              voluptatibus, quibusdam, quia, quae voluptatem voluptatum quod
+              exercitationem quos voluptates quas doloribus.
+            </p>
+          </div>
+        </template>
+      </VueTrailerScene>
+
+      <div v-for="i in 4" :key="i" class="card">
+        <h1 class="title">Max</h1>
+        <p>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam
+          voluptatibus, quibusdam, quia, quae voluptatem voluptatum quod
+          exercitationem quos voluptates quas doloribus. Quisquam voluptatibus,
+          quibusdam, quia, quae voluptatem voluptatum quod exercitationem quos
+          voluptates quas doloribus.
+        </p>
+      </div>
+
+      <VueTrailerScene :act-name="'test'" :scene-number="4">
+        <template #default="slotProp">
+          <div class="card">
+            <VueTrailerScene :act-name="'test'" :scene-number="3">
+              <h1 ref="title" class="title">Max</h1>
+              <template #voHeader>
+                <div @click="slotProp.cut">Test</div>
+              </template>
+            </VueTrailerScene>
+            <p>
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam
+              voluptatibus, quibusdam, quia, quae voluptatem voluptatum quod
+              exercitationem quos voluptates quas doloribus. Quisquam
+              voluptatibus, quibusdam, quia, quae voluptatem voluptatum quod
+              exercitationem quos voluptates quas doloribus.
+            </p>
+          </div>
+        </template>
+      </VueTrailerScene>
     </div>
   </div>
 </template>
 
 <style scoped>
+.action {
+  padding: 30px 0;
+  text-align: center;
+}
+
 .container {
   display: flex;
   flex-wrap: wrap;
