@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import SpotLight from "./components/SpotLight.vue";
+import { VueTrailerSpotlight } from "./components/VueTrailerSpotlight";
 </script>
 
 <template>
-  <div>
-    <RouterView></RouterView>
-  </div>
-  <SpotLight />
+  <VueTrailerSpotlight>
+    <div>
+      <RouterView></RouterView>
+    </div>
+  </VueTrailerSpotlight>
 </template>
 
 <style scoped lang="scss"></style>

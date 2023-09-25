@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import ShowActor from "../components/ShowActor.vue";
-import { useAct } from "../composables";
+import { useAct } from "../composables/act";
+import { VueTrailerScene } from "../components/VueTrailerScene";
 
 const { action } = useAct("test");
 </script>
@@ -20,15 +20,15 @@ const { action } = useAct("test");
       </p>
     </div>
 
-    <ShowActor :act-name="'test'" :step="1" class="myCard">
-      <template #default="slotProps">
+    <VueTrailerScene :act-name="'test'" :scene-number="1" style="margin: 10px">
+      <template #default="slotProp">
         <div class="card">
-          <ShowActor :act-name="'test'" :step="2">
+          <VueTrailerScene :act-name="'test'" :scene-number="2">
             <h1 ref="title" class="title">Max</h1>
-            <template #tipHeader>
-              <div @click="slotProps.cut">Test</div>
+            <template #voHeader>
+              <div @click="slotProp.cut">Test</div>
             </template>
-          </ShowActor>
+          </VueTrailerScene>
           <button>123</button>
           <p>
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam
@@ -39,7 +39,7 @@ const { action } = useAct("test");
           </p>
         </div>
       </template>
-    </ShowActor>
+    </VueTrailerScene>
 
     <div v-for="i in 20" :key="i" class="card">
       <h1 class="title">Max</h1>
@@ -71,9 +71,5 @@ const { action } = useAct("test");
   background-color: #fff;
   box-shadow: 0 0 1rem rgba(0, 0, 0, 0.2);
 }
-
-.myCard {
-  position: sticky;
-  top: 0;
-}
 </style>
+../composables/composables

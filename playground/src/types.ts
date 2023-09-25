@@ -1,13 +1,31 @@
-import type { MaybeRef } from "vue";
-
-export type Actor = MaybeRef<HTMLElement | null>;
-
-export type SceneConfig = {
-  scrollFixed?: boolean;
-  autoScrollTo?: boolean;
+export type SpotlightOptions = {
+  padding?: number;
+  borderRadius?: number;
+  darkZoneColor?: string;
 };
 
-export type Scene = {
-  actor: Actor;
-  config?: SceneConfig;
+type ActOptions = {
+  actName?: string;
+  sceneNumber: number;
 };
+
+type CameraOptions = {
+  cameraFollow?: boolean;
+  cameraFollowOptions?: ScrollIntoViewOptions;
+  cameraFixAfterFollow?: boolean;
+};
+
+type VoiceOverOptions = {
+  voiceOverPlacement?: "top" | "bottom" | "left" | "right";
+  voiceOverAutoPlacement?: boolean;
+  voiceOverAlign?: "start" | "center" | "end";
+  voiceOverWidth?: number;
+  voiceOverTitle?: string;
+  voiceOverContent?: string;
+  voiceOverPrevButtonText?: string;
+  voiceOverNextButtonText?: string;
+  voiceOverDoneButtonText?: string;
+};
+
+export type SpotlightProps = SpotlightOptions;
+export type SceneProps = ActOptions & CameraOptions & VoiceOverOptions;
