@@ -15,7 +15,7 @@ import { InjectionSpotlightOptions } from "../constants";
 import { useAct } from "../composables/act";
 import { useBodyScrollFixed } from "../composables/bodyScrollFixed";
 import { useWindowSize, useElementBounding } from "@vueuse/core";
-import "./scene.scss";
+import "../scene.scss";
 
 export const VueTrailerScene = defineComponent({
   name: "VueTrailerScene",
@@ -219,7 +219,7 @@ export const VueTrailerScene = defineComponent({
         let same = 0;
         let lastPos: number;
 
-        el.scrollIntoView(props.cameraFollowOptions);
+        el.scrollIntoView(props.cameraFollowOptions as ScrollIntoViewOptions);
         requestAnimationFrame(check);
 
         function check() {

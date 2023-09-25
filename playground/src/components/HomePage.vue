@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useAct } from "../composables/act";
-import { VueTrailerScene } from "../components/VueTrailerScene";
+import { useAct } from "../../../src/index";
+import { VueTrailerScene } from "../../../src/index";
 
 const { action } = useAct("test");
 </script>

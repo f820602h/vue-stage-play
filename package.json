@@ -2,7 +2,7 @@
   "name": "vue-trailer",
   "description": "Designing an introductory tutorial for your website, much like directing a trailer.",
   "private": false,
-  "version": "2.0.0",
+  "version": "0.0.0",
   "author": "max.lee <f820602h@gmail.com>",
   "license": "MIT",
   "homepage": "https://github.com/f820602h/vue-trailer#readme",
