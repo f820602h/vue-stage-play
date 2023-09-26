@@ -4,13 +4,19 @@ type ActOptions = {
 
 type SceneOptions = {
   sceneNumber: number;
+  tag?: string;
   skip?: boolean;
 };
 
-export type SpotlightOptions = {
+type SpotlightOptions = {
   spotlightPadding?: number;
   spotlightBorderRadius?: number;
   spotlightDarkZoneColor?: string;
+};
+
+type AudienceOptions = {
+  allowInteract?: boolean;
+  allowLeave?: boolean;
 };
 
 type CameraOptions = {
@@ -50,6 +56,7 @@ type HookOptions = {
 };
 
 export type GlobalOptions = SpotlightOptions &
+  AudienceOptions &
   CameraOptions &
   VoiceOverOptions &
   HookOptions;
@@ -58,6 +65,7 @@ export type SpotlightProps = SpotlightOptions;
 
 export type SceneProps = ActOptions &
   SceneOptions &
+  AudienceOptions &
   CameraOptions &
   VoiceOverOptions &
   HookOptions;

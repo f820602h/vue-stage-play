@@ -9,6 +9,7 @@ import {
   reactive,
   ref,
   watch,
+  Teleport,
 } from "vue";
 import { SceneProps, ResolvedSceneProps, GlobalOptions } from "../types";
 import {
@@ -32,10 +33,26 @@ export const StagePlayScene = defineComponent({
       type: Number,
       required: true,
     },
+    tag: {
+      type: String,
+      required: false,
+      default: "div",
+    },
     skip: {
       type: Boolean,
       required: false,
       default: false,
+    },
+
+    allowInteract: {
+      type: Boolean,
+      required: false,
+      default: undefined,
+    },
+    allowLeave: {
+      type: Boolean,
+      required: false,
+      default: undefined,
     },
 
     cameraFollow: {
@@ -127,6 +144,7 @@ export const StagePlayScene = defineComponent({
       actName: props.actName,
       sceneNumber: props.sceneNumber,
       skip: props.skip,
+      tag: props.tag,
     }));
 
     function setLocalOptions(options: GlobalOptions = {}) {
@@ -137,7 +155,7 @@ export const StagePlayScene = defineComponent({
       () => props,
       async () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { actName, sceneNumber, skip, ...options } = props;
+        const { actName, sceneNumber, skip, tag, ...options } = props;
         setLocalOptions(options);
       },
       { deep: true, immediate: true },
@@ -208,9 +226,9 @@ export const StagePlayScene = defineComponent({
       );
     });
 
-    const defaultVoiceOverStyle = computed<StyleValue>(() => {
+    const sceneStyle = computed<StyleValue>(() => {
       return {
-        width: `${options.value.voiceOverWidth}px`,
+        zIndex: isCurrentScene.value ? "99998" : "",
       };
     });
 
@@ -220,6 +238,12 @@ export const StagePlayScene = defineComponent({
         inset: `-${options.value.spotlightPadding || 0}px`,
         borderRadius: `${options.value.spotlightBorderRadius || 0}px`,
         overflow: "none",
+      };
+    });
+
+    const defaultVoiceOverStyle = computed<StyleValue>(() => {
+      return {
+        width: `${options.value.voiceOverWidth}px`,
       };
     });
 
@@ -255,7 +279,6 @@ export const StagePlayScene = defineComponent({
       }
 
       if (spotlightBottom.value + voHeight.value > windowHeight.value) {
-        console.log(spotlightBottom.value, voHeight.value, windowHeight.value);
         possiblePositions = possiblePositions.filter(
           (position) => position !== "bottom",
         );
@@ -283,7 +306,6 @@ export const StagePlayScene = defineComponent({
         spotlightTop.value < 0 ||
         spotlightBottom.value > windowHeight.value
       ) {
-        console.log(1);
         possiblePositions = possiblePositions.filter(
           (position) => position !== "right" && position !== "left",
         );
@@ -384,131 +406,140 @@ export const StagePlayScene = defineComponent({
 
     return () => {
       return h(
-        "div",
+        options.value.tag,
         {
-          class: "vue-stage-play__scene",
-          style: { position: "relative" },
+          class: [
+            "vue-stage-play__scene",
+            isCurrentScene.value && !options.value.allowInteract
+              ? "noInteract"
+              : "",
+          ],
+          style: sceneStyle.value,
         },
         [
           slots.default?.(slotProp),
-          isCurrentScene.value &&
-            h(
-              "div",
-              {
-                id: `vue-stage-play__spotlight-${options.value.actName}-${options.value.sceneNumber}`,
-                class: "vue-stage-play__spotlight",
-                ref: spotlight,
-                style: spotlightStyle.value,
-              },
-              [
-                h(
-                  "div",
-                  {
-                    class: [
-                      "vue-stage-play__voice-over",
-                      autoVoiceOverPlacement.value,
-                      options.value.voiceOverAlign,
+          isCurrentScene.value
+            ? h(
+                "div",
+                {
+                  id: `vue-stage-play__spotlight-${options.value.actName}-${options.value.sceneNumber}`,
+                  class: "vue-stage-play__spotlight",
+                  ref: spotlight,
+                  style: spotlightStyle.value,
+                },
+                [
+                  h(
+                    "div",
+                    {
+                      class: [
+                        "vue-stage-play__voice-over",
+                        autoVoiceOverPlacement.value,
+                        options.value.voiceOverAlign,
+                      ],
+                      ref: voiceOver,
+                    },
+                    [
+                      slots.voiceOver?.() ||
+                        h(
+                          "div",
+                          {
+                            class: "default__voice-over",
+                            style: defaultVoiceOverStyle.value,
+                          },
+                          [
+                            h("div", { class: "default__voice-over__header" }, [
+                              slots.voHeader?.() ||
+                                h(
+                                  "div",
+                                  {
+                                    class:
+                                      "efault__voice-over__header__content",
+                                  },
+                                  options.value.voiceOverTitle,
+                                ),
+                              slots.voCloseIcon?.() ||
+                                h(
+                                  "svg",
+                                  {
+                                    class: "default__voice-over__header__close",
+                                    xmlns: "http://www.w3.org/2000/svg",
+                                    width: "16",
+                                    height: "16",
+                                    viewBox: "0 0 16 16",
+                                    fill: "currentColor",
+                                    onClick: () => cut(),
+                                  },
+                                  [
+                                    h("path", {
+                                      d: "M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z",
+                                    }),
+                                  ],
+                                ),
+                            ]),
+                            h("div", { class: "default__voice-over__body" }, [
+                              slots.voBody?.() ||
+                                options.value.voiceOverContent,
+                            ]),
+                            h("div", { class: "default__voice-over__footer" }, [
+                              slots.voFooterScene?.() ||
+                                h(
+                                  "div",
+                                  {
+                                    class: "default__voice-over__footer__scene",
+                                  },
+                                  currentSceneIndex.value !== undefined &&
+                                    `${currentSceneIndex.value + 1} / ${
+                                      totalSceneCount.value
+                                    }`,
+                                ),
+                              slots.voFooterButton?.() ||
+                                h(
+                                  "div",
+                                  {
+                                    class: "default__voice-over__footer__btns",
+                                  },
+                                  [
+                                    hasPrevScene.value &&
+                                      h(
+                                        "button",
+                                        {
+                                          class:
+                                            "default__voice-over__footer__btn",
+                                          onClick: () => prevScene(),
+                                        },
+                                        options.value.voiceOverPrevButtonText,
+                                      ),
+                                    hasNextScene.value &&
+                                      h(
+                                        "button",
+                                        {
+                                          class:
+                                            "default__voice-over__footer__btn",
+                                          onClick: () => nextScene(),
+                                        },
+                                        options.value.voiceOverNextButtonText,
+                                      ),
+                                    !hasNextScene.value &&
+                                      h(
+                                        "button",
+                                        {
+                                          class:
+                                            "default__voice-over__footer__btn",
+                                          onClick: () => cut(),
+                                        },
+                                        options.value.voiceOverDoneButtonText,
+                                      ),
+                                  ],
+                                ),
+                            ]),
+                          ],
+                        ),
                     ],
-                    ref: voiceOver,
-                  },
-                  [
-                    slots.voiceOver?.() ||
-                      h(
-                        "div",
-                        {
-                          class: "default__voice-over",
-                          style: defaultVoiceOverStyle.value,
-                        },
-                        [
-                          h("div", { class: "default__voice-over__header" }, [
-                            slots.voHeader?.() ||
-                              h(
-                                "div",
-                                {
-                                  class: "efault__voice-over__header__content",
-                                },
-                                options.value.voiceOverTitle,
-                              ),
-                            slots.voCloseIcon?.() ||
-                              h(
-                                "svg",
-                                {
-                                  class: "default__voice-over__header__close",
-                                  xmlns: "http://www.w3.org/2000/svg",
-                                  width: "16",
-                                  height: "16",
-                                  viewBox: "0 0 16 16",
-                                  fill: "currentColor",
-                                  onClick: () => cut(),
-                                },
-                                [
-                                  h("path", {
-                                    d: "M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z",
-                                  }),
-                                ],
-                              ),
-                          ]),
-                          h("div", { class: "default__voice-over__body" }, [
-                            slots.voBody?.() ||
-                              h("div", null, options.value.voiceOverContent),
-                          ]),
-                          h("div", { class: "default__voice-over__footer" }, [
-                            slots.voFooterScene?.() ||
-                              h(
-                                "div",
-                                {
-                                  class: "default__voice-over__footer__scene",
-                                },
-                                currentSceneIndex.value !== undefined &&
-                                  `${currentSceneIndex.value + 1} / ${
-                                    totalSceneCount.value
-                                  }`,
-                              ),
-                            slots.voFooterButton?.() ||
-                              h(
-                                "div",
-                                { class: "default__voice-over__footer__btns" },
-                                [
-                                  hasPrevScene.value &&
-                                    h(
-                                      "button",
-                                      {
-                                        class:
-                                          "default__voice-over__footer__btn",
-                                        onClick: () => prevScene(),
-                                      },
-                                      options.value.voiceOverPrevButtonText,
-                                    ),
-                                  hasNextScene.value &&
-                                    h(
-                                      "button",
-                                      {
-                                        class:
-                                          "default__voice-over__footer__btn",
-                                        onClick: () => nextScene(),
-                                      },
-                                      options.value.voiceOverNextButtonText,
-                                    ),
-                                  !hasNextScene.value &&
-                                    h(
-                                      "button",
-                                      {
-                                        class:
-                                          "default__voice-over__footer__btn",
-                                        onClick: () => cut(),
-                                      },
-                                      options.value.voiceOverDoneButtonText,
-                                    ),
-                                ],
-                              ),
-                          ]),
-                        ],
-                      ),
-                  ],
-                ),
-              ],
-            ),
-          isScrollFixed.value
+                  ),
+                ],
+              )
+            : undefined,
+          isCurrentScene.value && isScrollFixed.value
             ? h(
                 "div",
                 {
@@ -517,15 +548,32 @@ export const StagePlayScene = defineComponent({
                     position: "fixed",
                     top: "0",
                     left: "0",
-                    width: "200vw",
+                    width: "150vw",
                     height: "100vh",
-                    zIndex: "9999",
+                    zIndex: "99999",
                     overflow: "auto",
                     overscrollBehavior: "none",
                   },
                 },
                 [h("div", { style: { width: "100%", height: "300%" } })],
               )
+            : undefined,
+          isCurrentScene.value
+            ? h(Teleport, { to: "body" }, [
+                h("div", {
+                  style: {
+                    position: "fixed",
+                    top: 0,
+                    left: 0,
+                    zIndex: 99997,
+                    width: "100vw",
+                    height: "100vh",
+                  },
+                  onClick: () => {
+                    options.value.allowLeave && cut();
+                  },
+                }),
+              ])
             : undefined,
         ],
       );

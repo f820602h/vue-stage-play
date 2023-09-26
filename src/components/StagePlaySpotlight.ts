@@ -65,8 +65,8 @@ export const StagePlaySpotlight = defineComponent({
 
     const oldTop = ref(0);
     const oldLeft = ref(0);
-    const oldWidth = ref(0);
-    const oldHeight = ref(0);
+    const oldWidth = ref("100%");
+    const oldHeight = ref("100%");
     const root = isClient
       ? document.documentElement || document.body
       : undefined;
@@ -79,8 +79,18 @@ export const StagePlaySpotlight = defineComponent({
         const { top, left, width, height } = useElementBounding(currentActor);
         oldTop.value = top.value;
         oldLeft.value = left.value;
-        oldWidth.value = width.value;
-        oldHeight.value = height.value;
+        oldWidth.value = `${width.value}px`;
+        oldHeight.value = `${height.value}px`;
+      }
+    });
+
+    watch(currentActName, (val) => {
+      if (val === undefined) {
+        isFloat.value = true;
+        oldTop.value = 0;
+        oldLeft.value = 0;
+        oldWidth.value = "100%";
+        oldHeight.value = "100%";
       }
     });
 
@@ -91,8 +101,8 @@ export const StagePlaySpotlight = defineComponent({
         top: `${oldTop.value + (root?.scrollTop || 0)}px`,
         left: `${oldLeft.value + (root?.scrollLeft || 0)}px`,
 
-        width: `${oldWidth.value}px`,
-        height: `${oldHeight.value}px`,
+        width: oldWidth.value,
+        height: oldHeight.value,
         borderRadius: `${options.value.spotlightBorderRadius}px`,
 
         opacity: currentActName.value ? 1 : 0,

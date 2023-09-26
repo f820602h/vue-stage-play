@@ -5,6 +5,9 @@ export const defaultOptions: Required<GlobalOptions> = {
   spotlightBorderRadius: 10,
   spotlightDarkZoneColor: "rgba(66, 66, 66, 0.5)",
 
+  allowInteract: false,
+  allowLeave: true,
+
   cameraFollow: true,
   cameraFollowOffset: 24,
   cameraFollowOptions: {
@@ -18,9 +21,8 @@ export const defaultOptions: Required<GlobalOptions> = {
   voiceOverAutoPlacement: true,
   voiceOverAlign: "center",
   voiceOverWidth: 300,
-  voiceOverTitle: "Voice Over",
-  voiceOverContent:
-    "It takes a strong man to save himself,\nand a great man to save another.",
+  voiceOverTitle: "Act 3 Scene 2",
+  voiceOverContent: "To be, or not to be; that's the question.",
   voiceOverPrevButtonText: "Back",
   voiceOverNextButtonText: "Next",
   voiceOverDoneButtonText: "Done",

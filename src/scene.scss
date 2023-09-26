@@ -1,10 +1,13 @@
 .vue-stage-play__scene {
   position: relative;
+
+  &.noInteract * {
+    pointer-events: none;
+  }
 }
 
 .vue-stage-play__spotlight {
   position: absolute;
-  z-index: 999;
   pointer-events: none;
 
   .vue-stage-play__spotlight-bulb {
@@ -16,7 +19,6 @@
 .vue-stage-play__voice-over {
   position: absolute;
   z-index: 1;
-  padding: 0;
   pointer-events: auto;
 
   &.top {
@@ -130,7 +132,7 @@
     align-items: center;
     padding: 8px 12px;
     border-bottom: 1px #ddd solid;
-    font-size: 20px;
+    font-size: 16px;
     line-height: 1;
     font-weight: bold;
 
