@@ -43,6 +43,10 @@ export const StagePlayScene = defineComponent({
       required: false,
       default: undefined,
     },
+    cameraFollowOffset: {
+      type: Number,
+      required: false,
+    },
     cameraFollowOptions: {
       type: Object as () => ScrollIntoViewOptions,
       required: false,
@@ -195,6 +199,8 @@ export const StagePlayScene = defineComponent({
       jumpToScene,
     });
 
+    const isScrollFixed = ref(false);
+
     const isCurrentScene = computed(() => {
       return (
         currentActName.value === options.value.actName &&
@@ -210,6 +216,7 @@ export const StagePlayScene = defineComponent({
 
     const spotlightStyle = computed<StyleValue>(() => {
       return {
+        scrollMargin: `${options.value.cameraFollowOffset}px`,
         inset: `-${options.value.spotlightPadding || 0}px`,
         borderRadius: `${options.value.spotlightBorderRadius || 0}px`,
         overflow: "none",
@@ -248,6 +255,7 @@ export const StagePlayScene = defineComponent({
       }
 
       if (spotlightBottom.value + voHeight.value > windowHeight.value) {
+        console.log(spotlightBottom.value, voHeight.value, windowHeight.value);
         possiblePositions = possiblePositions.filter(
           (position) => position !== "bottom",
         );
@@ -275,6 +283,7 @@ export const StagePlayScene = defineComponent({
         spotlightTop.value < 0 ||
         spotlightBottom.value > windowHeight.value
       ) {
+        console.log(1);
         possiblePositions = possiblePositions.filter(
           (position) => position !== "right" && position !== "left",
         );
@@ -289,7 +298,6 @@ export const StagePlayScene = defineComponent({
       return possiblePositions[0] || options.value.voiceOverPlacement;
     });
 
-    const isScrollFixed = ref(false);
     const { fixed, reset } = useBodyScrollFixed();
 
     function smoothScroll(el: HTMLElement): Promise<void> {
@@ -500,6 +508,25 @@ export const StagePlayScene = defineComponent({
                 ),
               ],
             ),
+          isScrollFixed.value
+            ? h(
+                "div",
+                {
+                  class: "vue-stage-play__scene__scroll-mask",
+                  style: {
+                    position: "fixed",
+                    top: "0",
+                    left: "0",
+                    width: "200vw",
+                    height: "100vh",
+                    zIndex: "9999",
+                    overflow: "auto",
+                    overscrollBehavior: "none",
+                  },
+                },
+                [h("div", { style: { width: "100%", height: "300%" } })],
+              )
+            : undefined,
         ],
       );
     };

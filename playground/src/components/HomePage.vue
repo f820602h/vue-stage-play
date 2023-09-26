@@ -46,7 +46,7 @@ const skip = ref<boolean>(true);
         </template>
       </StagePlayScene>
 
-      <div v-for="i in 4" :key="i" class="card">
+      <div v-for="i in 8" :key="i" class="card">
         <h1 class="title">Max</h1>
         <p>
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam

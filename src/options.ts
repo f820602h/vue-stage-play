@@ -6,6 +6,7 @@ export const defaultOptions: Required<GlobalOptions> = {
   spotlightDarkZoneColor: "rgba(66, 66, 66, 0.5)",
 
   cameraFollow: true,
+  cameraFollowOffset: 24,
   cameraFollowOptions: {
     behavior: "smooth",
     block: "start",

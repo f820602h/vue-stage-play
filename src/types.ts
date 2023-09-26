@@ -15,6 +15,7 @@ export type SpotlightOptions = {
 
 type CameraOptions = {
   cameraFollow?: boolean;
+  cameraFollowOffset?: number;
   cameraFollowOptions?: ScrollIntoViewOptions;
   cameraFixAfterFollow?: boolean;
 };
