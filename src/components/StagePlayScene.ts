@@ -1,12 +1,11 @@
 /* eslint-disable vue/require-default-prop */
-import type { DefineComponent, StyleValue } from "vue";
+import type { DefineComponent, PropType, StyleValue } from "vue";
 import {
   h,
   defineComponent,
   computed,
   inject,
   onBeforeUnmount,
-  onMounted,
   reactive,
   ref,
   watch,
@@ -22,8 +21,8 @@ import { useBodyScrollFixed } from "../composables/bodyScrollFixed";
 import { useWindowSize, useElementBounding } from "@vueuse/core";
 import "../scene.scss";
 
-export const VueTrailerScene = defineComponent({
-  name: "VueTrailerScene",
+export const StagePlayScene = defineComponent({
+  name: "StagePlayScene",
   props: {
     actName: {
       type: String,
@@ -32,6 +31,11 @@ export const VueTrailerScene = defineComponent({
     sceneNumber: {
       type: Number,
       required: true,
+    },
+    skip: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
 
     cameraFollow: {
@@ -86,6 +90,23 @@ export const VueTrailerScene = defineComponent({
       type: String,
       required: false,
     },
+
+    onBeforeCut: {
+      type: Function as PropType<() => void>,
+      required: false,
+    },
+    onAfterCut: {
+      type: Function as PropType<() => void>,
+      required: false,
+    },
+    onActivated: {
+      type: Function as PropType<() => void>,
+      required: false,
+    },
+    onDeactivated: {
+      type: Function as PropType<() => void>,
+      required: false,
+    },
   },
   setup(props, { slots }) {
     const spotlight = ref<HTMLElement | null>(null);
@@ -101,6 +122,7 @@ export const VueTrailerScene = defineComponent({
       ...localOptions.value,
       actName: props.actName,
       sceneNumber: props.sceneNumber,
+      skip: props.skip,
     }));
 
     function setLocalOptions(options: GlobalOptions = {}) {
@@ -111,40 +133,66 @@ export const VueTrailerScene = defineComponent({
       () => props,
       async () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { actName, sceneNumber, ...options } = props;
+        const { actName, sceneNumber, skip, ...options } = props;
         setLocalOptions(options);
       },
       { deep: true, immediate: true },
     );
 
     const {
-      actorWalkIn,
       currentActName,
+      currentAct,
+      currentSceneIndex,
+      currentSceneNumber,
       hasPrevScene,
       hasNextScene,
-      currentSceneNumber,
-      currentSceneIndex,
       totalSceneCount,
+
+      actorWalkIn,
+      action,
+      cut: _cut,
       addScene,
       removeScene,
       nextScene,
       prevScene,
       jumpToScene,
-      cut,
-    } = useAct(options.value.actName);
+    } = useAct();
+
+    function cut() {
+      options.value.onBeforeCut({
+        currentActName: currentActName.value,
+        currentAct: currentAct.value,
+        currentSceneIndex: currentSceneIndex.value,
+        currentSceneNumber: currentSceneNumber.value,
+        hasPrevScene: hasPrevScene.value,
+        hasNextScene: hasNextScene.value,
+        totalSceneCount: totalSceneCount.value,
+      });
+      _cut();
+      options.value.onAfterCut({
+        currentActName: currentActName.value,
+        currentAct: currentAct.value,
+        currentSceneIndex: currentSceneIndex.value,
+        currentSceneNumber: currentSceneNumber.value,
+        hasPrevScene: hasPrevScene.value,
+        hasNextScene: hasNextScene.value,
+        totalSceneCount: totalSceneCount.value,
+      });
+    }
 
     const slotProp = reactive({
+      currentActName,
+      currentAct,
+      currentSceneIndex,
+      currentSceneNumber,
       hasPrevScene,
       hasNextScene,
-      currentSceneNumber,
-      currentSceneIndex,
       totalSceneCount,
-      addScene,
-      removeScene,
+      action,
+      cut,
       nextScene,
       prevScene,
       jumpToScene,
-      cut,
     });
 
     const isCurrentScene = computed(() => {
@@ -270,9 +318,37 @@ export const VueTrailerScene = defineComponent({
       });
     }
 
+    watch(
+      () => ({
+        actName: options.value.actName,
+        sceneNumber: options.value.sceneNumber,
+        skip: options.value.skip,
+      }),
+      (newVal, oldVal) => {
+        if (oldVal?.actName && oldVal?.sceneNumber) {
+          removeScene(oldVal.actName, oldVal.sceneNumber);
+        }
+        if (newVal?.actName && newVal?.sceneNumber && !newVal?.skip) {
+          addScene(newVal.actName, newVal.sceneNumber);
+        }
+      },
+      { deep: true, immediate: true },
+    );
+
     watch(spotlight, async (val) => {
       reset();
-      if (!val) return;
+      if (!val) {
+        options.value.onDeactivated({
+          currentActName: currentActName.value,
+          currentAct: currentAct.value,
+          currentSceneIndex: currentSceneIndex.value,
+          currentSceneNumber: currentSceneNumber.value,
+          hasPrevScene: hasPrevScene.value,
+          hasNextScene: hasNextScene.value,
+          totalSceneCount: totalSceneCount.value,
+        });
+        return;
+      }
 
       actorWalkIn(val);
       if (options.value.cameraFollow) {
@@ -282,22 +358,27 @@ export const VueTrailerScene = defineComponent({
       }
 
       if (options.value.cameraFixAfterFollow) fixed();
-    });
-
-    onMounted(() => {
-      addScene(options.value.sceneNumber);
+      options.value.onActivated({
+        currentActName: currentActName.value,
+        currentAct: currentAct.value,
+        currentSceneIndex: currentSceneIndex.value,
+        currentSceneNumber: currentSceneNumber.value,
+        hasPrevScene: hasPrevScene.value,
+        hasNextScene: hasNextScene.value,
+        totalSceneCount: totalSceneCount.value,
+      });
     });
 
     onBeforeUnmount(() => {
       cut();
-      removeScene(options.value.sceneNumber);
+      removeScene(options.value.actName, options.value.sceneNumber);
     });
 
     return () => {
       return h(
         "div",
         {
-          class: "vue-trailer__scene",
+          class: "vue-stage-play__scene",
           style: { position: "relative" },
         },
         [
@@ -306,8 +387,8 @@ export const VueTrailerScene = defineComponent({
             h(
               "div",
               {
-                id: `vue-trailer__spotlight-${options.value.actName}-${options.value.sceneNumber}`,
-                class: "vue-trailer__spotlight",
+                id: `vue-stage-play__spotlight-${options.value.actName}-${options.value.sceneNumber}`,
+                class: "vue-stage-play__spotlight",
                 ref: spotlight,
                 style: spotlightStyle.value,
               },
@@ -316,7 +397,7 @@ export const VueTrailerScene = defineComponent({
                   "div",
                   {
                     class: [
-                      "vue-trailer__voice-over",
+                      "vue-stage-play__voice-over",
                       autoVoiceOverPlacement.value,
                       options.value.voiceOverAlign,
                     ],

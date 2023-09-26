@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import HomePage from "./components/HomePage.vue";
-import { VueTrailerSpotlight } from "../../src/index";
+import { StagePlaySpotlight } from "../../src/index";
 </script>
 
 <template>
-  <VueTrailerSpotlight>
+  <StagePlaySpotlight>
     <div>
       <HomePage></HomePage>
     </div>
-  </VueTrailerSpotlight>
+  </StagePlaySpotlight>
 </template>
 
 <style lang="scss">

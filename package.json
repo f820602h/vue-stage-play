@@ -1,14 +1,14 @@
 {
-  "name": "vue-trailer",
-  "description": "Designing an introductory tutorial for your website, much like directing a trailer.",
+  "name": "vue-stage-play",
+  "description": "Designing an introductory tutorial for your website, much like directing a stage play.",
   "private": false,
   "version": "0.0.0",
   "author": "max.lee <f820602h@gmail.com>",
   "license": "MIT",
-  "homepage": "https://github.com/f820602h/vue-trailer#readme",
+  "homepage": "https://github.com/f820602h/vue-stage-play#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/f820602h/vue-trailer.git"
+    "url": "git+https://github.com/f820602h/vue-stage-play.git"
   },
   "keywords": [
     "vue",

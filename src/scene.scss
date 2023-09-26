@@ -1,19 +1,19 @@
-.vue-trailer__scene {
+.vue-stage-play__scene {
   position: relative;
 }
 
-.vue-trailer__spotlight {
+.vue-stage-play__spotlight {
   position: absolute;
   z-index: 999;
   pointer-events: none;
 
-  .vue-trailer__spotlight-bulb {
+  .vue-stage-play__spotlight-bulb {
     top: 0 !important;
     left: 0 !important;
   }
 }
 
-.vue-trailer__voice-over {
+.vue-stage-play__voice-over {
   position: absolute;
   top: 0;
   left: 0;

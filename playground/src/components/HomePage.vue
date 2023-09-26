@@ -1,14 +1,17 @@
 <script setup lang="ts">
-import { useAct } from "../../../src/index";
-import { VueTrailerScene } from "../../../src/index";
+import { ref } from "vue";
+import { useStagePlay } from "../../../src/index";
+import { StagePlayScene } from "../../../src/index";
 
-const { action } = useAct("test");
+const { action } = useStagePlay();
+
+const skip = ref<boolean>(true);
 </script>
 
 <template>
   <div>
     <div class="action">
-      <button @click="action()">Test</button>
+      <button @click="action('test')">Test</button>
     </div>
 
     <div class="container">
@@ -23,15 +26,15 @@ const { action } = useAct("test");
         </p>
       </div>
 
-      <VueTrailerScene :act-name="'test'" :scene-number="1">
+      <StagePlayScene :act-name="'test'" :scene-number="1">
         <template #default="slotProp">
           <div class="card">
-            <VueTrailerScene :act-name="'test'" :scene-number="2">
-              <h1 ref="title" class="title">Max</h1>
+            <StagePlayScene :act-name="'test'" :scene-number="2" :skip="skip">
+              <h1 ref="title" class="title" @click="skip = !skip">Max</h1>
               <template #voHeader>
                 <div @click="slotProp.cut">Test</div>
               </template>
-            </VueTrailerScene>
+            </StagePlayScene>
             <p>
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam
               voluptatibus, quibusdam, quia, quae voluptatem voluptatum quod
@@ -41,7 +44,7 @@ const { action } = useAct("test");
             </p>
           </div>
         </template>
-      </VueTrailerScene>
+      </StagePlayScene>
 
       <div v-for="i in 4" :key="i" class="card">
         <h1 class="title">Max</h1>
@@ -54,15 +57,15 @@ const { action } = useAct("test");
         </p>
       </div>
 
-      <VueTrailerScene :act-name="'test'" :scene-number="4">
+      <StagePlayScene :act-name="'test'" :scene-number="4">
         <template #default="slotProp">
           <div class="card">
-            <VueTrailerScene :act-name="'test'" :scene-number="3">
+            <StagePlayScene :act-name="'test'" :scene-number="3">
               <h1 ref="title" class="title">Max</h1>
               <template #voHeader>
                 <div @click="slotProp.cut">Test</div>
               </template>
-            </VueTrailerScene>
+            </StagePlayScene>
             <p>
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam
               voluptatibus, quibusdam, quia, quae voluptatem voluptatum quod
@@ -72,7 +75,7 @@ const { action } = useAct("test");
             </p>
           </div>
         </template>
-      </VueTrailerScene>
+      </StagePlayScene>
     </div>
   </div>
 </template>

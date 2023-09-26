@@ -50,19 +50,22 @@ const hasNextScene = computed<boolean>(() => {
 
 function action(actName: string, sceneNumber?: number): void {
   if (currentActName.value) {
-    throw new Error(
-      `[Vue Trailer] Act ${currentActName.value} already in action`,
+    console.warn(
+      `[Vue Stage Play] Act ${currentActName.value} already in action`,
     );
+    return;
   }
 
   const specifyAct = acts.value[actName];
   const act = Array.isArray(specifyAct) ? specifyAct : [];
 
   if (act.length === 0) {
-    throw new Error(`[Vue Trailer] No scene in act ${actName}`);
+    console.warn(`[Vue Stage Play] No scene in act ${actName}`);
+    return;
   }
   if (sceneNumber && !act[sceneNumber]) {
-    throw new Error(`[Vue Trailer] No scene ${sceneNumber} in act ${actName}`);
+    console.warn(`[Vue Stage Play] No scene ${sceneNumber} in act ${actName}`);
+    return;
   }
 
   currentActName.value = actName;
@@ -84,6 +87,10 @@ function addScene(actName: string, sceneNumber: number): void {
 
 function removeScene(actName: string, sceneNumber: number): void {
   if (!acts.value[actName]) return;
+  if (currentSceneNumber.value === sceneNumber) {
+    console.warn(`[Vue Stage Play] Can't remove current scene`);
+    return;
+  }
 
   const scenes = acts.value[actName];
   if (Array.isArray(scenes)) {
@@ -92,39 +99,46 @@ function removeScene(actName: string, sceneNumber: number): void {
   }
 }
 
-function prevScene(actName: string): void {
+function prevScene(): void {
   const sceneIndex = currentSceneIndex.value;
-  if (currentActName.value !== actName || sceneIndex === undefined) {
-    throw new Error(`[Vue Trailer] Act ${actName} not in action.`);
+  if (currentActName.value === undefined || sceneIndex === undefined) {
+    console.warn(`[Vue Stage Play] No playing act.`);
+    return;
   }
   if (!hasPrevScene.value) {
-    throw new Error(`[Vue Trailer] No previous scene.`);
+    console.warn(`[Vue Stage Play] No previous scene.`);
+    return;
   }
   currentSceneIndex.value = sceneIndex - 1;
 }
 
-function nextScene(actName: string): void {
+function nextScene(): void {
   const sceneIndex = currentSceneIndex.value;
-  if (currentActName.value !== actName || sceneIndex === undefined) {
-    throw new Error(`[Vue Trailer] Act ${actName} not in action.`);
+  if (currentActName.value === undefined || sceneIndex === undefined) {
+    console.warn(`[Vue Stage Play] No playing act.`);
+    return;
   }
   if (!hasNextScene.value) {
-    throw new Error(`[Vue Trailer] No next scene.`);
+    console.warn(`[Vue Stage Play] No next scene.`);
+    return;
   }
   currentSceneIndex.value = sceneIndex + 1;
 }
 
-function jumpToScene(actName: string, sceneNumber: number): void {
-  if (currentActName.value !== actName) {
-    throw new Error(`[Vue Trailer] Act ${actName} not in action.`);
+function jumpToScene(sceneNumber: number): void {
+  const sceneIndex = currentSceneIndex.value;
+  if (currentActName.value === undefined || sceneIndex === undefined) {
+    console.warn(`[Vue Stage Play] No playing act.`);
+    return;
   }
   if (currentAct.value.indexOf(sceneNumber) < 0) {
-    throw new Error("[Vue Trailer] No such scene");
+    console.warn("[Vue Stage Play] No such scene");
+    return;
   }
   currentSceneIndex.value = currentAct.value.indexOf(sceneNumber);
 }
 
-export function useActs() {
+export function useStagePlay() {
   return {
     acts,
     currentActName,
@@ -132,6 +146,30 @@ export function useActs() {
     currentSceneIndex,
     currentSceneNumber,
     currentActor,
+    hasPrevScene,
+    hasNextScene,
+    totalSceneCount,
+    action,
+    cut,
+    prevScene,
+    nextScene,
+    jumpToScene,
+  };
+}
+
+export function useAct() {
+  return {
+    acts,
+    currentActName,
+    currentAct,
+    currentSceneIndex,
+    currentSceneNumber,
+    currentActor,
+    hasPrevScene,
+    hasNextScene,
+    totalSceneCount,
+
+    actorWalkIn,
     action,
     cut,
     addScene,
@@ -139,37 +177,5 @@ export function useActs() {
     prevScene,
     nextScene,
     jumpToScene,
-  };
-}
-
-export function useAct(actName: string) {
-  return {
-    currentActName,
-    currentSceneIndex,
-    currentSceneNumber,
-    hasPrevScene,
-    hasNextScene,
-    totalSceneCount,
-
-    actorWalkIn,
-    action: (sceneNumber?: number) => {
-      action(actName, sceneNumber);
-    },
-    cut,
-    addScene: (sceneNumber: number) => {
-      addScene(actName, sceneNumber);
-    },
-    removeScene: (sceneNumber: number) => {
-      removeScene(actName, sceneNumber);
-    },
-    prevScene: () => {
-      prevScene(actName);
-    },
-    nextScene: () => {
-      nextScene(actName);
-    },
-    jumpToScene: (sceneNumber: number) => {
-      jumpToScene(actName, sceneNumber);
-    },
   };
 }

@@ -16,11 +16,11 @@ import {
   InjectionSpotlightOptions,
 } from "../constants";
 import { defaultOptions } from "../options";
-import { useActs } from "../composables/act";
+import { useStagePlay } from "../composables/act";
 import { isClient, useElementBounding } from "@vueuse/core";
 
-export const VueTrailerSpotlight = defineComponent({
-  name: "VueTrailerSpotlight",
+export const StagePlaySpotlight = defineComponent({
+  name: "StagePlaySpotlight",
   props: {
     spotlightPadding: {
       type: Number,
@@ -36,7 +36,7 @@ export const VueTrailerSpotlight = defineComponent({
     },
   },
   setup(props, { slots }) {
-    const { currentActName, currentSceneIndex, currentActor } = useActs();
+    const { currentActName, currentSceneIndex, currentActor } = useStagePlay();
 
     const globalOptions = inject(InjectionGlobalOptions, {});
     const localOptions = ref<SpotlightProps>({});
@@ -118,7 +118,7 @@ export const VueTrailerSpotlight = defineComponent({
           currentActName.value !== undefined ||
             currentSceneIndex.value !== undefined
             ? h("div", {
-                class: "vue-trailer__spotlight-bulb",
+                class: "vue-stage-play__spotlight-bulb",
                 style: bulbStyle.value,
                 onTransitionend: () => {
                   isFloat.value = false;

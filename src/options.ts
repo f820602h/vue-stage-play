@@ -4,6 +4,7 @@ export const defaultOptions: Required<GlobalOptions> = {
   spotlightPadding: 10,
   spotlightBorderRadius: 10,
   spotlightDarkZoneColor: "rgba(66, 66, 66, 0.5)",
+
   cameraFollow: true,
   cameraFollowOptions: {
     behavior: "smooth",
@@ -11,6 +12,7 @@ export const defaultOptions: Required<GlobalOptions> = {
     inline: "nearest",
   },
   cameraFixAfterFollow: true,
+
   voiceOverPlacement: "bottom",
   voiceOverAutoPlacement: true,
   voiceOverAlign: "center",
@@ -21,4 +23,17 @@ export const defaultOptions: Required<GlobalOptions> = {
   voiceOverPrevButtonText: "Back",
   voiceOverNextButtonText: "Next",
   voiceOverDoneButtonText: "Done",
+
+  onBeforeCut: () => {
+    return;
+  },
+  onAfterCut: () => {
+    return;
+  },
+  onActivated: () => {
+    return;
+  },
+  onDeactivated: () => {
+    return;
+  },
 };

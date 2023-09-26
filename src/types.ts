@@ -4,6 +4,7 @@ type ActOptions = {
 
 type SceneOptions = {
   sceneNumber: number;
+  skip?: boolean;
 };
 
 export type SpotlightOptions = {
@@ -30,14 +31,35 @@ type VoiceOverOptions = {
   voiceOverDoneButtonText?: string;
 };
 
-export type GlobalOptions = SpotlightOptions & CameraOptions & VoiceOverOptions;
+type HookParams = {
+  currentActName: string | undefined;
+  currentAct: number[];
+  currentSceneIndex: number | undefined;
+  currentSceneNumber: number | undefined;
+  hasPrevScene: boolean;
+  hasNextScene: boolean;
+  totalSceneCount: number;
+};
+
+type HookOptions = {
+  onBeforeCut?: (currentActInfo: HookParams) => void;
+  onAfterCut?: (currentActInfo: HookParams) => void;
+  onActivated?: (currentActInfo: HookParams) => void;
+  onDeactivated?: (currentActInfo: HookParams) => void;
+};
+
+export type GlobalOptions = SpotlightOptions &
+  CameraOptions &
+  VoiceOverOptions &
+  HookOptions;
 
 export type SpotlightProps = SpotlightOptions;
 
 export type SceneProps = ActOptions &
   SceneOptions &
   CameraOptions &
-  VoiceOverOptions;
+  VoiceOverOptions &
+  HookOptions;
 
 export type ResolvedSpotlightProps = Required<SpotlightProps>;
 

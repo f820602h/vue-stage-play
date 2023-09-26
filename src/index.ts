@@ -1,4 +1,4 @@
 export * from "./types";
-export { VueTrailerScene } from "./components/VueTrailerScene";
-export { VueTrailerSpotlight } from "./components/VueTrailerSpotlight";
-export { useAct, useActs } from "./composables/act";
+export { StagePlayScene } from "./components/StagePlayScene";
+export { StagePlaySpotlight } from "./components/StagePlaySpotlight";
+export { useStagePlay } from "./composables/act";
