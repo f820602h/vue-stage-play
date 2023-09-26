@@ -1,3 +1,4 @@
+/* eslint-disable vue/require-default-prop */
 import type { DefineComponent, StyleValue } from "vue";
 import {
   h,
@@ -10,8 +11,12 @@ import {
   ref,
   watch,
 } from "vue";
-import { SceneProps } from "../types";
-import { InjectionSpotlightOptions } from "../constants";
+import { SceneProps, ResolvedSceneProps, GlobalOptions } from "../types";
+import {
+  InjectionGlobalOptions,
+  InjectionSpotlightOptions,
+} from "../constants";
+import { defaultOptions } from "../options";
 import { useAct } from "../composables/act";
 import { useBodyScrollFixed } from "../composables/bodyScrollFixed";
 import { useWindowSize, useElementBounding } from "@vueuse/core";
@@ -31,62 +36,86 @@ export const VueTrailerScene = defineComponent({
 
     cameraFollow: {
       type: Boolean,
-      default: true,
+      required: false,
+      default: undefined,
     },
     cameraFollowOptions: {
       type: Object as () => ScrollIntoViewOptions,
-      default: () => ({
-        behavior: "smooth",
-        block: "start",
-        inline: "nearest",
-      }),
+      required: false,
     },
     cameraFixAfterFollow: {
       type: Boolean,
-      default: true,
+      required: false,
+      default: undefined,
     },
 
     voiceOverPlacement: {
       type: String as () => "top" | "bottom" | "left" | "right",
-      default: "left",
+      required: false,
     },
     voiceOverAutoPlacement: {
       type: Boolean,
-      default: true,
+      required: false,
+      default: undefined,
     },
     voiceOverAlign: {
       type: String as () => "start" | "center" | "end",
-      default: "center",
+      required: false,
     },
     voiceOverWidth: {
       type: Number,
-      default: 300,
+      required: false,
     },
     voiceOverTitle: {
       type: String,
-      default: "Voice Over",
+      required: false,
     },
     voiceOverContent: {
       type: String,
-      default:
-        "It takes a strong man to save himself,\nand a great man to save another.",
+      required: false,
     },
     voiceOverPrevButtonText: {
       type: String,
-      default: "Back",
+      required: false,
     },
     voiceOverNextButtonText: {
       type: String,
-      default: "Next",
+      required: false,
     },
     voiceOverDoneButtonText: {
       type: String,
-      default: "Done",
+      required: false,
     },
   },
   setup(props, { slots }) {
     const spotlight = ref<HTMLElement | null>(null);
     const voiceOver = ref<HTMLElement | null>(null);
+
+    const globalOptions = inject(InjectionGlobalOptions, {});
+    const spotlightOptions = inject(InjectionSpotlightOptions);
+    const localOptions = ref<GlobalOptions>({});
+    const options = computed<ResolvedSceneProps>(() => ({
+      ...defaultOptions,
+      ...globalOptions,
+      ...spotlightOptions,
+      ...localOptions.value,
+      actName: props.actName,
+      sceneNumber: props.sceneNumber,
+    }));
+
+    function setLocalOptions(options: GlobalOptions = {}) {
+      localOptions.value = JSON.parse(JSON.stringify(options));
+    }
+
+    watch(
+      () => props,
+      async () => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { actName, sceneNumber, ...options } = props;
+        setLocalOptions(options);
+      },
+      { deep: true, immediate: true },
+    );
 
     const {
       actorWalkIn,
@@ -102,7 +131,7 @@ export const VueTrailerScene = defineComponent({
       prevScene,
       jumpToScene,
       cut,
-    } = useAct(props.actName);
+    } = useAct(options.value.actName);
 
     const slotProp = reactive({
       hasPrevScene,
@@ -120,22 +149,22 @@ export const VueTrailerScene = defineComponent({
 
     const isCurrentScene = computed(() => {
       return (
-        currentActName.value === props.actName &&
-        currentSceneNumber.value === props.sceneNumber
+        currentActName.value === options.value.actName &&
+        currentSceneNumber.value === options.value.sceneNumber
       );
     });
 
     const defaultVoiceOverStyle = computed<StyleValue>(() => {
       return {
-        width: `${props.voiceOverWidth}px`,
+        width: `${options.value.voiceOverWidth}px`,
       };
     });
 
-    const spotlightConfig = inject(InjectionSpotlightOptions);
     const spotlightStyle = computed<StyleValue>(() => {
       return {
-        inset: `-${spotlightConfig?.padding || 0}px`,
-        borderRadius: `${spotlightConfig?.borderRadius || 0}px`,
+        inset: `-${options.value.spotlightPadding || 0}px`,
+        borderRadius: `${options.value.spotlightBorderRadius || 0}px`,
+        overflow: "none",
       };
     });
 
@@ -151,10 +180,11 @@ export const VueTrailerScene = defineComponent({
     const { width: windowWidth, height: windowHeight } = useWindowSize();
 
     const autoVoiceOverPlacement = computed<string>(() => {
-      if (!props.voiceOverAutoPlacement) return props.voiceOverPlacement;
+      if (!options.value.voiceOverAutoPlacement)
+        return options.value.voiceOverPlacement;
 
       let possiblePositions: string[] = [];
-      switch (props.voiceOverPlacement) {
+      switch (options.value.voiceOverPlacement) {
         case "top":
           possiblePositions = ["top", "bottom", "left", "right"];
           break;
@@ -208,7 +238,7 @@ export const VueTrailerScene = defineComponent({
         );
       }
 
-      return possiblePositions[0] || props.voiceOverPlacement;
+      return possiblePositions[0] || options.value.voiceOverPlacement;
     });
 
     const isScrollFixed = ref(false);
@@ -219,7 +249,9 @@ export const VueTrailerScene = defineComponent({
         let same = 0;
         let lastPos: number;
 
-        el.scrollIntoView(props.cameraFollowOptions as ScrollIntoViewOptions);
+        el.scrollIntoView(
+          options.value.cameraFollowOptions as ScrollIntoViewOptions,
+        );
         requestAnimationFrame(check);
 
         function check() {
@@ -243,22 +275,22 @@ export const VueTrailerScene = defineComponent({
       if (!val) return;
 
       actorWalkIn(val);
-      if (props.cameraFollow) {
+      if (options.value.cameraFollow) {
         isScrollFixed.value = true;
         await smoothScroll(val);
         isScrollFixed.value = false;
       }
 
-      if (props.cameraFixAfterFollow) fixed();
+      if (options.value.cameraFixAfterFollow) fixed();
     });
 
     onMounted(() => {
-      addScene(props.sceneNumber);
+      addScene(options.value.sceneNumber);
     });
 
     onBeforeUnmount(() => {
       cut();
-      removeScene(props.sceneNumber);
+      removeScene(options.value.sceneNumber);
     });
 
     return () => {
@@ -274,7 +306,7 @@ export const VueTrailerScene = defineComponent({
             h(
               "div",
               {
-                id: `vue-trailer__spotlight-${props.actName}-${props.sceneNumber}`,
+                id: `vue-trailer__spotlight-${options.value.actName}-${options.value.sceneNumber}`,
                 class: "vue-trailer__spotlight",
                 ref: spotlight,
                 style: spotlightStyle.value,
@@ -286,7 +318,7 @@ export const VueTrailerScene = defineComponent({
                     class: [
                       "vue-trailer__voice-over",
                       autoVoiceOverPlacement.value,
-                      props.voiceOverAlign,
+                      options.value.voiceOverAlign,
                     ],
                     ref: voiceOver,
                   },
@@ -306,7 +338,7 @@ export const VueTrailerScene = defineComponent({
                                 {
                                   class: "efault__voice-over__header__content",
                                 },
-                                props.voiceOverTitle,
+                                options.value.voiceOverTitle,
                               ),
                             slots.voCloseIcon?.() ||
                               h(
@@ -329,7 +361,7 @@ export const VueTrailerScene = defineComponent({
                           ]),
                           h("div", { class: "default__voice-over__body" }, [
                             slots.voBody?.() ||
-                              h("div", null, props.voiceOverContent),
+                              h("div", null, options.value.voiceOverContent),
                           ]),
                           h("div", { class: "default__voice-over__footer" }, [
                             slots.voFooterScene?.() ||
@@ -356,7 +388,7 @@ export const VueTrailerScene = defineComponent({
                                           "default__voice-over__footer__btn",
                                         onClick: () => prevScene(),
                                       },
-                                      props.voiceOverPrevButtonText,
+                                      options.value.voiceOverPrevButtonText,
                                     ),
                                   hasNextScene.value &&
                                     h(
@@ -366,7 +398,7 @@ export const VueTrailerScene = defineComponent({
                                           "default__voice-over__footer__btn",
                                         onClick: () => nextScene(),
                                       },
-                                      props.voiceOverNextButtonText,
+                                      options.value.voiceOverNextButtonText,
                                     ),
                                   !hasNextScene.value &&
                                     h(
@@ -376,7 +408,7 @@ export const VueTrailerScene = defineComponent({
                                           "default__voice-over__footer__btn",
                                         onClick: () => cut(),
                                       },
-                                      props.voiceOverDoneButtonText,
+                                      options.value.voiceOverDoneButtonText,
                                     ),
                                 ],
                               ),

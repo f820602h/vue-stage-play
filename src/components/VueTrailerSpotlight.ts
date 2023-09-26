@@ -1,3 +1,4 @@
+/* eslint-disable vue/require-default-prop */
 import type { DefineComponent, StyleValue } from "vue";
 import {
   h,
@@ -7,34 +8,59 @@ import {
   ref,
   watch,
   Teleport,
+  inject,
 } from "vue";
-import { SpotlightProps } from "../types";
-import { InjectionSpotlightOptions } from "../constants";
+import { SpotlightProps, ResolvedSpotlightProps } from "../types";
+import {
+  InjectionGlobalOptions,
+  InjectionSpotlightOptions,
+} from "../constants";
+import { defaultOptions } from "../options";
 import { useActs } from "../composables/act";
 import { isClient, useElementBounding } from "@vueuse/core";
 
 export const VueTrailerSpotlight = defineComponent({
   name: "VueTrailerSpotlight",
   props: {
-    padding: {
+    spotlightPadding: {
       type: Number,
-      default: 10,
+      required: false,
     },
-    borderRadius: {
+    spotlightBorderRadius: {
       type: Number,
-      default: 10,
+      required: false,
     },
-    darkZoneColor: {
+    spotlightDarkZoneColor: {
       type: String,
-      default: "rgba(33, 33, 33, 0.5)",
+      required: false,
     },
   },
   setup(props, { slots }) {
-    const { currentActName, currentSceneNumber, currentActor } = useActs();
+    const { currentActName, currentSceneIndex, currentActor } = useActs();
+
+    const globalOptions = inject(InjectionGlobalOptions, {});
+    const localOptions = ref<SpotlightProps>({});
+    const options = computed<ResolvedSpotlightProps>(() => ({
+      ...defaultOptions,
+      ...globalOptions,
+      ...localOptions.value,
+    }));
+
+    function setLocalOptions(options: SpotlightProps = {}) {
+      localOptions.value = JSON.parse(JSON.stringify(options));
+    }
+
+    watch(
+      () => props,
+      () => {
+        setLocalOptions(props);
+      },
+      { deep: true, immediate: true },
+    );
 
     provide(InjectionSpotlightOptions, {
-      padding: props.padding,
-      borderRadius: props.borderRadius,
+      spotlightPadding: options.value.spotlightPadding,
+      spotlightBorderRadius: options.value.spotlightBorderRadius,
     });
 
     const oldTop = ref(0);
@@ -45,7 +71,7 @@ export const VueTrailerSpotlight = defineComponent({
       ? document.documentElement || document.body
       : undefined;
 
-    const isFloat = ref<boolean>(false);
+    const isFloat = ref<boolean>(true);
 
     watch(currentActor, (newVal) => {
       isFloat.value = true;
@@ -67,11 +93,11 @@ export const VueTrailerSpotlight = defineComponent({
 
         width: `${oldWidth.value}px`,
         height: `${oldHeight.value}px`,
-        borderRadius: `${props.borderRadius}px`,
+        borderRadius: `${options.value.spotlightBorderRadius}px`,
 
         opacity: currentActName.value ? 1 : 0,
         boxShadow: currentActName.value
-          ? `${props.darkZoneColor} 0px 0px 0px 5000px`
+          ? `${options.value.spotlightDarkZoneColor} 0px 0px 0px 5000px`
           : "",
         transition: "all 0.6s ease",
         pointerEvents: "none",
@@ -88,15 +114,17 @@ export const VueTrailerSpotlight = defineComponent({
               !isFloat.value && currentActor.value
                 ? currentActor.value
                 : "body",
-            disabled: !currentActName.value || !currentSceneNumber.value,
-            onTransitionend: () => {
-              isFloat.value = false;
-            },
           },
-          h("div", {
-            class: "vue-trailer__spotlight-bulb",
-            style: bulbStyle.value,
-          }),
+          currentActName.value !== undefined ||
+            currentSceneIndex.value !== undefined
+            ? h("div", {
+                class: "vue-trailer__spotlight-bulb",
+                style: bulbStyle.value,
+                onTransitionend: () => {
+                  isFloat.value = false;
+                },
+              })
+            : null,
         ),
       ];
     };

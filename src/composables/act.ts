@@ -13,10 +13,10 @@ const currentAct = computed<number[]>(() => {
 });
 
 const currentSceneIndex = ref<number>();
-const currentSceneNumber = computed<number | null>(() => {
-  if (!currentActName.value) return null;
-  if (!currentAct.value.length) return null;
-  if (currentSceneIndex.value === undefined) return null;
+const currentSceneNumber = computed<number | undefined>(() => {
+  if (!currentActName.value) return undefined;
+  if (!currentAct.value.length) return undefined;
+  if (currentSceneIndex.value === undefined) return undefined;
   return currentAct.value[currentSceneIndex.value];
 });
 

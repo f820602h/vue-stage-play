@@ -1,7 +1,3 @@
-import type { Plugin } from "vue";
-import { VueTrailerScene } from "./components/VueTrailerScene";
-import { VueTrailerSpotlight } from "./components/VueTrailerSpotlight";
-import { InjectionGlobalOptions } from "./constants";
 import type { GlobalOptions } from "./types";
 
 export const defaultOptions: Required<GlobalOptions> = {
@@ -26,13 +22,3 @@ export const defaultOptions: Required<GlobalOptions> = {
   voiceOverNextButtonText: "Next",
   voiceOverDoneButtonText: "Done",
 };
-
-export function VueTrailerPlugin(globalOptions: GlobalOptions): Plugin {
-  return {
-    install(app) {
-      app.provide(InjectionGlobalOptions, globalOptions);
-      app.component("VueTrailerScene", VueTrailerScene);
-      app.component("VueTrailerSpotlight", VueTrailerSpotlight);
-    },
-  };
-}

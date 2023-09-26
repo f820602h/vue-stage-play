@@ -1,12 +1,15 @@
-export type SpotlightOptions = {
-  padding?: number;
-  borderRadius?: number;
-  darkZoneColor?: string;
+type ActOptions = {
+  actName: string;
 };
 
-type ActOptions = {
-  actName?: string;
+type SceneOptions = {
   sceneNumber: number;
+};
+
+export type SpotlightOptions = {
+  spotlightPadding?: number;
+  spotlightBorderRadius?: number;
+  spotlightDarkZoneColor?: string;
 };
 
 type CameraOptions = {
@@ -27,8 +30,16 @@ type VoiceOverOptions = {
   voiceOverDoneButtonText?: string;
 };
 
-export type GlobalOptions = SpotlightOptions &
-  SpotlightOptions &
-  VoiceOverOptions;
+export type GlobalOptions = SpotlightOptions & CameraOptions & VoiceOverOptions;
+
 export type SpotlightProps = SpotlightOptions;
-export type SceneProps = ActOptions & CameraOptions & VoiceOverOptions;
+
+export type SceneProps = ActOptions &
+  SceneOptions &
+  CameraOptions &
+  VoiceOverOptions;
+
+export type ResolvedSpotlightProps = Required<SpotlightProps>;
+
+export type ResolvedSceneProps = Required<SceneProps> &
+  Required<SpotlightProps>;
