@@ -1,0 +1,59 @@
+import { defineConfig } from 'vitepress'
+
+// https://vitepress.dev/reference/site-config
+export default defineConfig({
+  head: [
+    ['link', { rel: 'icon', href: '/logo.svg', type: 'image/svg+xml' }],
+    ['meta', { name: 'author', content: 'max.lee' }],
+    ['meta', { property: 'og:title', content: 'Vue Stage Play' }],
+    ['meta', { property: 'og:description', content: 'Designing an guided tour for your website with vue components, much like directing a stage play' }],
+  ],
+
+  title: "Vue Stage Play",
+  description: "Designing an guided tour for your website with vue components, much like directing a stage play",
+
+  markdown: {
+    theme: {
+      light: 'vitesse-light',
+      dark: 'vitesse-dark',
+    },
+  },
+  
+  themeConfig: {
+    logo: '/logo.svg',
+    // https://vitepress.dev/reference/default-theme-config
+    nav: [
+      { text: 'Guide', link: '/getting-started' },
+      { text: 'API Reference', link: '/stage-play-spotlight' },
+      { text: 'Examples', link: '/basic-example' }
+    ],
+
+    sidebar: [
+      {
+        text: 'Guide',
+        items: [
+          { text: 'Getting Started', link: '/getting-started' },
+          { text: 'Register Components Globally', link: '/register-components-globally' },
+        ]
+      },
+      {
+        text: 'API Reference',
+        items: [
+          { text: '&ltStagePlaySpotlight /&gt;', link: '/stage-play-spotlight' },
+          { text: '&ltStagePlayScene /&gt;', link: '/stage-play-scene' },
+          { text: 'useStagePlay', link: '/use-stage-play' },
+        ]
+      },
+      {
+        text: 'Examples',
+        items: [
+          { text: 'Basic Example', link: '/basic-example' },
+        ]
+      }
+    ],
+
+    socialLinks: [
+      { icon: 'github', link: 'https://github.com/f820602h/vue-stage-play' }
+    ]
+  }
+})
