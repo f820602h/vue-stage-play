@@ -9,6 +9,8 @@ import {
   watch,
   Teleport,
   inject,
+  Transition,
+  nextTick,
 } from "vue";
 import { SpotlightProps, ResolvedSpotlightProps } from "../types";
 import {
@@ -36,7 +38,7 @@ export const StagePlaySpotlight = defineComponent({
     },
   },
   setup(props, { slots }) {
-    const { currentActName, currentSceneIndex, currentActor } = useStagePlay();
+    const { currentActName, currentActor } = useStagePlay();
 
     const globalOptions = inject(InjectionGlobalOptions, {});
     const localOptions = ref<SpotlightProps>({});
@@ -72,25 +74,30 @@ export const StagePlaySpotlight = defineComponent({
       : undefined;
 
     const isFloat = ref<boolean>(true);
+    const isSpotlightShow = ref(false);
+
+    watch(currentActName, () => {
+      if (currentActName.value) isSpotlightShow.value = true;
+    });
 
     watch(currentActor, (newVal) => {
       isFloat.value = true;
       if (newVal) {
-        const { top, left, width, height } = useElementBounding(currentActor);
+        const { top, left, width, height } = useElementBounding(
+          currentActor.value,
+        );
         oldTop.value = top.value;
         oldLeft.value = left.value;
         oldWidth.value = `${width.value}px`;
         oldHeight.value = `${height.value}px`;
-      }
-    });
-
-    watch(currentActName, (val) => {
-      if (val === undefined) {
-        isFloat.value = true;
-        oldTop.value = 0;
-        oldLeft.value = 0;
-        oldWidth.value = "100%";
-        oldHeight.value = "100%";
+      } else if (!newVal && currentActName.value === undefined) {
+        nextTick(() => {
+          isSpotlightShow.value = false;
+          oldTop.value = 0;
+          oldLeft.value = 0;
+          oldWidth.value = "100%";
+          oldHeight.value = "100%";
+        });
       }
     });
 
@@ -100,15 +107,13 @@ export const StagePlaySpotlight = defineComponent({
 
         top: `${oldTop.value + (root?.scrollTop || 0)}px`,
         left: `${oldLeft.value + (root?.scrollLeft || 0)}px`,
+        zIndex: 99995,
 
         width: oldWidth.value,
         height: oldHeight.value,
         borderRadius: `${options.value.spotlightBorderRadius}px`,
 
-        opacity: currentActName.value ? 1 : 0,
-        boxShadow: currentActName.value
-          ? `${options.value.spotlightDarkZoneColor} 0px 0px 0px 5000px`
-          : "",
+        boxShadow: `${options.value.spotlightDarkZoneColor} 0px 0px 0px 5000px`,
         transition: "all 0.6s ease",
         pointerEvents: "none",
       };
@@ -125,16 +130,17 @@ export const StagePlaySpotlight = defineComponent({
                 ? currentActor.value
                 : "body",
           },
-          currentActName.value !== undefined ||
-            currentSceneIndex.value !== undefined
-            ? h("div", {
-                class: "vue-stage-play__spotlight-bulb",
-                style: bulbStyle.value,
-                onTransitionend: () => {
-                  isFloat.value = false;
-                },
-              })
-            : null,
+          h(Transition, { name: "fade" }, () => [
+            isSpotlightShow.value
+              ? h("div", {
+                  class: "vue-stage-play__spotlight-bulb",
+                  style: bulbStyle.value,
+                  onTransitionend: () => {
+                    isFloat.value = false;
+                  },
+                })
+              : null,
+          ]),
         ),
       ];
     };

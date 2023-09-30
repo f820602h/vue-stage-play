@@ -26,10 +26,10 @@ const skip = ref<boolean>(true);
         </p>
       </div>
 
-      <StagePlayScene :act-name="'test'" :scene-number="1">
+      <StagePlayScene :act-name="'test'" :scene="10" :allow-interact="true">
         <template #default="slotProp">
           <div class="card">
-            <StagePlayScene :act-name="'test'" :scene-number="2" :skip="skip">
+            <StagePlayScene :act-name="'test'" :scene="20" :skip="skip">
               <h1 ref="title" class="title" @click="skip = !skip">Max</h1>
               <template #voHeader>
                 <div @click="slotProp.cut">Test</div>
@@ -57,10 +57,10 @@ const skip = ref<boolean>(true);
         </p>
       </div>
 
-      <StagePlayScene :act-name="'test'" :scene-number="4">
+      <StagePlayScene :act-name="'test'" :scene="40">
         <template #default="slotProp">
           <div class="card">
-            <StagePlayScene :act-name="'test'" :scene-number="3">
+            <StagePlayScene :act-name="'test'" :scene="30">
               <h1 ref="title" class="title">Max</h1>
               <template #voHeader>
                 <div @click="slotProp.cut">Test</div>

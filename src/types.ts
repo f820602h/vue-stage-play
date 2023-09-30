@@ -3,7 +3,7 @@ type ActOptions = {
 };
 
 type SceneOptions = {
-  sceneNumber: number;
+  scene: number;
   tag?: string;
   skip?: boolean;
 };
@@ -38,21 +38,27 @@ type VoiceOverOptions = {
   voiceOverDoneButtonText?: string;
 };
 
-type HookParams = {
+export type ScopedProps = {
   currentActName: string | undefined;
-  currentAct: number[];
-  currentSceneIndex: number | undefined;
-  currentSceneNumber: number | undefined;
+  currentActSceneList: number[];
+  currentScene: number | undefined;
+  currentSceneOrder: number;
   hasPrevScene: boolean;
   hasNextScene: boolean;
   totalSceneCount: number;
+  isCurrentScene: boolean;
+  action: (actName?: string, scene?: number) => void;
+  cut: () => void;
+  prevScene: () => void;
+  nextScene: () => void;
+  jumpToScene: (scene: number) => void;
 };
 
 type HookOptions = {
-  onBeforeCut?: (currentActInfo: HookParams) => void;
-  onAfterCut?: (currentActInfo: HookParams) => void;
-  onActivated?: (currentActInfo: HookParams) => void;
-  onDeactivated?: (currentActInfo: HookParams) => void;
+  onBeforeCut?: (scopedProps: ScopedProps) => void | Promise<void>;
+  onAfterCut?: (scopedProps: ScopedProps) => void | Promise<void>;
+  onActivated?: (scopedProps: ScopedProps) => void | Promise<void>;
+  onDeactivated?: (scopedProps: ScopedProps) => void | Promise<void>;
 };
 
 export type GlobalOptions = SpotlightOptions &

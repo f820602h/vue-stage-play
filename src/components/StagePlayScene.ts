@@ -11,7 +11,12 @@ import {
   watch,
   Teleport,
 } from "vue";
-import { SceneProps, ResolvedSceneProps, GlobalOptions } from "../types";
+import {
+  SceneProps,
+  ResolvedSceneProps,
+  GlobalOptions,
+  ScopedProps,
+} from "../types";
 import {
   InjectionGlobalOptions,
   InjectionSpotlightOptions,
@@ -29,9 +34,10 @@ export const StagePlayScene = defineComponent({
       type: String,
       required: true,
     },
-    sceneNumber: {
+    scene: {
       type: Number,
       required: true,
+      validator: (val: number) => val >= 0,
     },
     tag: {
       type: String,
@@ -142,12 +148,12 @@ export const StagePlayScene = defineComponent({
       ...spotlightOptions,
       ...localOptions.value,
       actName: props.actName,
-      sceneNumber: props.sceneNumber,
+      scene: props.scene,
       skip: props.skip,
       tag: props.tag,
     }));
 
-    function setLocalOptions(options: GlobalOptions = {}) {
+    function setLocalOptions(options: GlobalOptions = {}): void {
       localOptions.value = JSON.parse(JSON.stringify(options));
     }
 
@@ -155,7 +161,7 @@ export const StagePlayScene = defineComponent({
       () => props,
       async () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { actName, sceneNumber, skip, tag, ...options } = props;
+        const { actName, scene, skip, tag, ...options } = props;
         setLocalOptions(options);
       },
       { deep: true, immediate: true },
@@ -163,68 +169,54 @@ export const StagePlayScene = defineComponent({
 
     const {
       currentActName,
-      currentAct,
-      currentSceneIndex,
-      currentSceneNumber,
+      currentActSceneList,
+      currentScene,
+      currentSceneOrder,
       hasPrevScene,
       hasNextScene,
       totalSceneCount,
 
-      actorWalkIn,
-      action,
+      action: _action,
       cut: _cut,
       addScene,
       removeScene,
-      nextScene,
       prevScene,
+      nextScene,
       jumpToScene,
     } = useAct();
-
-    function cut() {
-      options.value.onBeforeCut({
-        currentActName: currentActName.value,
-        currentAct: currentAct.value,
-        currentSceneIndex: currentSceneIndex.value,
-        currentSceneNumber: currentSceneNumber.value,
-        hasPrevScene: hasPrevScene.value,
-        hasNextScene: hasNextScene.value,
-        totalSceneCount: totalSceneCount.value,
-      });
-      _cut();
-      options.value.onAfterCut({
-        currentActName: currentActName.value,
-        currentAct: currentAct.value,
-        currentSceneIndex: currentSceneIndex.value,
-        currentSceneNumber: currentSceneNumber.value,
-        hasPrevScene: hasPrevScene.value,
-        hasNextScene: hasNextScene.value,
-        totalSceneCount: totalSceneCount.value,
-      });
-    }
-
-    const slotProp = reactive({
-      currentActName,
-      currentAct,
-      currentSceneIndex,
-      currentSceneNumber,
-      hasPrevScene,
-      hasNextScene,
-      totalSceneCount,
-      action,
-      cut,
-      nextScene,
-      prevScene,
-      jumpToScene,
-    });
-
-    const isScrollFixed = ref(false);
 
     const isCurrentScene = computed(() => {
       return (
         currentActName.value === options.value.actName &&
-        currentSceneNumber.value === options.value.sceneNumber
+        currentScene.value === options.value.scene
       );
     });
+
+    const scopedProps: ScopedProps = reactive({
+      currentActName,
+      currentActSceneList,
+      currentScene,
+      currentSceneOrder,
+      hasPrevScene,
+      hasNextScene,
+      totalSceneCount,
+      isCurrentScene,
+      action,
+      cut,
+      prevScene,
+      nextScene,
+      jumpToScene,
+    });
+
+    function action(actName?: string, scene?: number): void {
+      _action(actName || options.value.actName, scene);
+    }
+
+    function cut(): void {
+      options.value.onBeforeCut(scopedProps);
+      _cut();
+      options.value.onAfterCut(scopedProps);
+    }
 
     const sceneStyle = computed<StyleValue>(() => {
       return {
@@ -351,57 +343,42 @@ export const StagePlayScene = defineComponent({
     watch(
       () => ({
         actName: options.value.actName,
-        sceneNumber: options.value.sceneNumber,
+        scene: options.value.scene,
         skip: options.value.skip,
       }),
       (newVal, oldVal) => {
-        if (oldVal?.actName && oldVal?.sceneNumber) {
-          removeScene(oldVal.actName, oldVal.sceneNumber);
+        if (oldVal?.actName && oldVal?.scene) {
+          removeScene(oldVal.actName, oldVal.scene);
         }
-        if (newVal?.actName && newVal?.sceneNumber && !newVal?.skip) {
-          addScene(newVal.actName, newVal.sceneNumber);
+        if (newVal?.actName && newVal?.scene && !newVal?.skip) {
+          addScene(newVal.actName, newVal.scene, spotlight);
         }
       },
       { deep: true, immediate: true },
     );
 
+    const isScrollFixed = ref(false);
     watch(spotlight, async (val) => {
       reset();
       if (!val) {
-        options.value.onDeactivated({
-          currentActName: currentActName.value,
-          currentAct: currentAct.value,
-          currentSceneIndex: currentSceneIndex.value,
-          currentSceneNumber: currentSceneNumber.value,
-          hasPrevScene: hasPrevScene.value,
-          hasNextScene: hasNextScene.value,
-          totalSceneCount: totalSceneCount.value,
-        });
+        options.value.onDeactivated(scopedProps);
         return;
       }
 
-      actorWalkIn(val);
       if (options.value.cameraFollow) {
         isScrollFixed.value = true;
         await smoothScroll(val);
+        console.log("smooth scroll done");
         isScrollFixed.value = false;
+        if (options.value.cameraFixAfterFollow) fixed();
       }
 
-      if (options.value.cameraFixAfterFollow) fixed();
-      options.value.onActivated({
-        currentActName: currentActName.value,
-        currentAct: currentAct.value,
-        currentSceneIndex: currentSceneIndex.value,
-        currentSceneNumber: currentSceneNumber.value,
-        hasPrevScene: hasPrevScene.value,
-        hasNextScene: hasNextScene.value,
-        totalSceneCount: totalSceneCount.value,
-      });
+      options.value.onActivated(scopedProps);
     });
 
     onBeforeUnmount(() => {
       cut();
-      removeScene(options.value.actName, options.value.sceneNumber);
+      removeScene(options.value.actName, options.value.scene);
     });
 
     return () => {
@@ -417,12 +394,12 @@ export const StagePlayScene = defineComponent({
           style: sceneStyle.value,
         },
         [
-          slots.default?.(slotProp),
+          slots.default?.(scopedProps),
           isCurrentScene.value
             ? h(
                 "div",
                 {
-                  id: `vue-stage-play__spotlight-${options.value.actName}-${options.value.sceneNumber}`,
+                  id: `vue-stage-play__spotlight-${options.value.actName}-${options.value.scene}`,
                   class: "vue-stage-play__spotlight",
                   ref: spotlight,
                   style: spotlightStyle.value,
@@ -481,14 +458,14 @@ export const StagePlayScene = defineComponent({
                                 options.value.voiceOverContent,
                             ]),
                             h("div", { class: "default__voice-over__footer" }, [
-                              slots.voFooterScene?.() ||
+                              slots.voFooter?.() ||
                                 h(
                                   "div",
                                   {
                                     class: "default__voice-over__footer__scene",
                                   },
-                                  currentSceneIndex.value !== undefined &&
-                                    `${currentSceneIndex.value + 1} / ${
+                                  currentScene.value !== undefined &&
+                                    `${currentSceneOrder.value + 1} / ${
                                       totalSceneCount.value
                                     }`,
                                 ),

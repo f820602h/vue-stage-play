@@ -18,8 +18,12 @@
 
 .vue-stage-play__voice-over {
   position: absolute;
-  z-index: 1;
-  pointer-events: auto;
+  z-index: 99996;
+  color: #292929;
+
+  * {
+    pointer-events: auto !important;
+  }
 
   &.top {
     top: 0;
@@ -166,6 +170,7 @@
     min-height: 60px;
     padding: 12px;
     font-size: 14px;
+    line-height: 1.5;
     text-align: center;
     white-space: pre-wrap;
   }
@@ -193,6 +198,7 @@
       border: 1px #ddd solid;
       border-radius: 4px;
       font-size: 14px;
+      line-height: 16px;
       font-weight: normal;
       color: #292929;
       background: #f1f1f1;
@@ -204,4 +210,14 @@
       }
     }
   }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease-in-out;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }

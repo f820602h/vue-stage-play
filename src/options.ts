@@ -21,7 +21,7 @@ export const defaultOptions: Required<GlobalOptions> = {
   voiceOverAutoPlacement: true,
   voiceOverAlign: "center",
   voiceOverWidth: 300,
-  voiceOverTitle: "Act 3 Scene 2",
+  voiceOverTitle: "Hamlet Act 3 Scene 2",
   voiceOverContent: "To be, or not to be; that's the question.",
   voiceOverPrevButtonText: "Back",
   voiceOverNextButtonText: "Next",

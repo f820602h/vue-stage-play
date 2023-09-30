@@ -4,10 +4,10 @@ import { StagePlaySpotlight } from "./components/StagePlaySpotlight";
 import { InjectionGlobalOptions } from "./constants";
 import type { GlobalOptions } from "./types";
 
-export function StagePlayPlugin(globalOptions: GlobalOptions): Plugin {
+export function StagePlayPlugin(globalOptions?: GlobalOptions): Plugin {
   return {
     install(app) {
-      app.provide(InjectionGlobalOptions, globalOptions);
+      app.provide(InjectionGlobalOptions, globalOptions || {});
       app.component("StagePlayScene", StagePlayScene);
       app.component("StagePlaySpotlight", StagePlaySpotlight);
     },
