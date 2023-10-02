@@ -151,19 +151,24 @@ A callback function that will be invoked when the scene loses highlight. You can
 
 ## Slots
 
-### `default`
+In all the slots described below, you can access slot props. ([see detail](#scopedprops)).
 
-The default slot. All elements inside the slot will be within the spotlight's scope. In the default slot, you can access slot props. ([see detail](#scopedprops)).
-
-``` vue{3}
+``` vue{3,6}
 <template>
   <StagePlayScene actName="guide" :scene="1">
     <template #default="scopedProps">
         <!-- ... -->
     </template>
+    <template #voiceOver="scopedProps">
+        <!-- ... -->
+    </template>
   </StagePlayScene>
 </template>
 ```
+
+### `default`
+
+The default slot. All elements inside the slot will be within the spotlight's scope. 
 
 ### `voiceOver`
 
