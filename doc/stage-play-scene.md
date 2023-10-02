@@ -1,22 +1,29 @@
 # StagePlayScene
 
-`<StagePlaySpotlight>` is the primary component used to highlight elements in a guided tour. Each `<StagePlayScene>` should be used within `<StagePlaySpotlight>`.
+The component used to configure each step in the guided tour. All the elements you wish to highlight in a single step must be placed within the slot of `<StagePlayScene>`.
 
-It's recommended to use it directly in the root component.
-
-``` vue{2,6,10}
+``` vue{2,6,15}
 <script setup lang="ts">
-import { StagePlaySpotlight } from 'vue-stage-play'
+import { StagePlayScene } from 'vue-stage-play'
 </script>
 
 <template>
-  <StagePlaySpotlight>
-    <div class="root">
-      <!-- ... -->
-    </div>
-  </StagePlaySpotlight>
+  <StagePlayScene actName="demo" :scene="1">
+    <template #default>
+      <div class="title">
+        <!-- ... -->
+      </div>
+      <div class="content">
+        <!-- ... -->
+      </div>
+    </template>
+  </StagePlayScene>
 </template>
 ```
+
+:::tip
+`<StagePlayScene>` will render an actual element. Hence, you may need to set the `margin` to it, rather than the highlighted elements.
+:::
 
 ## Props
 

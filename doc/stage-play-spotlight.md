@@ -1,6 +1,6 @@
 # StagePlaySpotlight
 
-`<StagePlaySpotlight>` is the primary component used to highlight elements in a guided tour. Each `<StagePlayScene>` should be used within `<StagePlaySpotlight>`.
+The primary component used to highlight elements in a guided tour. Each `<StagePlayScene>` should be used within `<StagePlaySpotlight>`.
 
 It's recommended to use it directly in the root component.
 
