@@ -5,7 +5,7 @@ export default defineConfig({
   base: "/vue-stage-play/",
 
   head: [
-    ['link', { rel: 'icon', href: '/logo.svg', type: 'image/svg+xml' }],
+    ['link', { rel: 'icon', href: './logo.svg', type: 'image/svg+xml' }],
     ['meta', { name: 'author', content: 'max.lee' }],
     ['meta', { property: 'og:title', content: 'Vue Stage Play' }],
     ['meta', { property: 'og:description', content: 'Designing an guided tour for your website with vue components, much like directing a stage play' }],
@@ -22,7 +22,7 @@ export default defineConfig({
   },
   
   themeConfig: {
-    logo: '/logo.svg',
+    logo: './logo.svg',
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: 'Guide', link: '/getting-started' },

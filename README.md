@@ -16,6 +16,10 @@ Designing an guided tour for your website with vue components, much like directi
   <a href="https://github.com/f820602h/vue-stage-play/blob/master/LICENSE"><img src="https://img.shields.io/npm/l/vue-stage-play.svg" alt="License"></a>
 </p>
 
+<p align="center">
+  <a href="https://f820602h.github.io/vue-stage-play/">Documentation</a>
+</p>
+
 ## What is VueStagePlay?
 
 VueStagePlay is a component-based package designed to assist you in implementing step-by-step guided tour function within your application.
@@ -80,6 +84,10 @@ import { StagePlayScene } from 'vue-stage-play'
   </StagePlayScene>
 </template>
 ```
+
+## Documentation
+
+Refer to the [documentation](https://f820602h.github.io/vue-stage-play/) for more detailed information.
 
 ## License
 
