@@ -26,5 +26,8 @@ features:
   - icon: 🎯
     title: Sharper focus
     details: Focused on your SFC component, no need for additional configuration.
+  - icon: 🗞️
+    title: No CSS file
+    details: No need to import additional CSS files.
 ---
 

@@ -5,10 +5,10 @@ You can also use the plugin provided by VueStagePlay for global component regist
 ``` js{6}
 import App from "./App.vue";
 import { createApp } from "vue";
-import { StagePlayPlugin } from "../../src/index";
+import { stagePlayPlugin } from "vue-stage-play";
 
 const app = createApp(App);
-app.use(StagePlayPlugin());
+app.use(stagePlayPlugin());
 
 app.mount("#app");
 ```
@@ -18,7 +18,7 @@ app.mount("#app");
 When you use the plugin to register components, you have the option to configure global parameters.
 
 ``` js{2-4}
-app.use(StagePlayPlugin({
+app.use(stagePlayPlugin({
   spotlightPadding: 20,
   cameraFollow: false,
   cameraFixAfterFollow: false,

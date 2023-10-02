@@ -1,8 +1,8 @@
 {
   "name": "vue-stage-play",
-  "description": "Designing an introductory tutorial for your website, much like directing a stage play.",
+  "description": "Designing an guided tour for your website with vue components, much like directing a stage play.",
   "private": false,
-  "version": "0.0.0",
+  "version": "0.0.3",
   "author": "max.lee <f820602h@gmail.com>",
   "license": "MIT",
   "homepage": "https://github.com/f820602h/vue-stage-play#readme",
@@ -30,8 +30,6 @@
   "scripts": {
     "dev": "pkgroll --watch",
     "build": "pkgroll --minify",
-    "play": "vite playground --open",
-    "play:build": "vite build playground",
     "lint": "eslint .",
     "typecheck": "vue-tsc --noEmit",
     "docs:dev": "vitepress dev doc",

@@ -2,6 +2,8 @@ import { defineConfig } from 'vitepress'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
+  base: "/vue-stage-play/",
+
   head: [
     ['link', { rel: 'icon', href: '/logo.svg', type: 'image/svg+xml' }],
     ['meta', { name: 'author', content: 'max.lee' }],
@@ -48,6 +50,8 @@ export default defineConfig({
         text: 'Examples',
         items: [
           { text: 'Basic Example', link: '/basic-example' },
+          { text: 'Voice Over Placement', link: '/voice-over-placement' },
+          { text: 'Voice Over Customizing', link: '/voice-over-customizing' },
         ]
       }
     ],

@@ -36,7 +36,7 @@ All the registered acts and their corresponding scenes.
 
 <div class="tip custom-block" style="padding-top: 8px">
 
-The acts and scenes belonging to `<StagePlayScene>` that have not undergone initial mounting will remain undisclosed.
+The acts and scenes of StagePlayScene that have not been mounted or set to skip will not be included.
 
 </div>
 
