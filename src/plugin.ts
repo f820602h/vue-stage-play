@@ -4,7 +4,7 @@ import { StagePlaySpotlight } from "./components/StagePlaySpotlight";
 import { InjectionGlobalOptions } from "./constants";
 import type { GlobalOptions } from "./types";
 
-export function StagePlayPlugin(globalOptions?: GlobalOptions): Plugin {
+export function stagePlayPlugin(globalOptions?: GlobalOptions): Plugin {
   return {
     install(app) {
       app.provide(InjectionGlobalOptions, globalOptions || {});

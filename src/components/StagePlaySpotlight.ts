@@ -65,10 +65,6 @@ export const StagePlaySpotlight = defineComponent({
       spotlightBorderRadius: options.value.spotlightBorderRadius,
     });
 
-    const oldTop = ref(0);
-    const oldLeft = ref(0);
-    const oldWidth = ref("100%");
-    const oldHeight = ref("100%");
     const root = isClient
       ? document.documentElement || document.body
       : undefined;
@@ -80,37 +76,68 @@ export const StagePlaySpotlight = defineComponent({
       if (currentActName.value) isSpotlightShow.value = true;
     });
 
+    const currentActorRef = ref<HTMLElement | null>(null);
+    const { top, left, width, height } = useElementBounding(currentActorRef);
+
     watch(currentActor, (newVal) => {
       isFloat.value = true;
       if (newVal) {
-        const { top, left, width, height } = useElementBounding(
-          currentActor.value,
-        );
-        oldTop.value = top.value;
-        oldLeft.value = left.value;
-        oldWidth.value = `${width.value}px`;
-        oldHeight.value = `${height.value}px`;
+        currentActorRef.value = newVal;
       } else if (!newVal && currentActName.value === undefined) {
         nextTick(() => {
+          currentActorRef.value = null;
           isSpotlightShow.value = false;
-          oldTop.value = 0;
-          oldLeft.value = 0;
-          oldWidth.value = "100%";
-          oldHeight.value = "100%";
         });
       }
     });
+
+    function getEnterKeyframes() {
+      return [{ opacity: 0 }, { opacity: 1 }];
+    }
+
+    function animateTransition(
+      element: HTMLElement,
+      done: () => void,
+      keyframes: Keyframe[],
+      options: KeyframeAnimationOptions & {
+        duration: number;
+        easing: string;
+      },
+    ) {
+      const animation = element.animate(keyframes, options);
+      animation.onfinish = () => {
+        done();
+      };
+    }
+
+    function enterTransition(element: HTMLElement, done: () => void) {
+      const keyframes = getEnterKeyframes();
+      const options = { duration: 600, easing: "ease" };
+      animateTransition(element, done, keyframes, options);
+    }
+
+    function leaveTransition(element: HTMLElement, done: () => void) {
+      const keyframes = getEnterKeyframes().reverse();
+      const options = { duration: 600, easing: "ease" };
+      animateTransition(element, done, keyframes, options);
+    }
 
     const bulbStyle = computed<StyleValue>(() => {
       return {
         position: "absolute",
 
-        top: `${oldTop.value + (root?.scrollTop || 0)}px`,
-        left: `${oldLeft.value + (root?.scrollLeft || 0)}px`,
+        top:
+          !isFloat.value && currentActor.value
+            ? "0"
+            : `${top.value + (root?.scrollTop || 0)}px`,
+        left:
+          !isFloat.value && currentActor.value
+            ? "0"
+            : `${left.value + (root?.scrollLeft || 0)}px`,
         zIndex: 99995,
 
-        width: oldWidth.value,
-        height: oldHeight.value,
+        width: width.value ? width.value + "px" : "100%",
+        height: height.value ? height.value + "px" : "100%",
         borderRadius: `${options.value.spotlightBorderRadius}px`,
 
         boxShadow: `${options.value.spotlightDarkZoneColor} 0px 0px 0px 5000px`,
@@ -130,17 +157,25 @@ export const StagePlaySpotlight = defineComponent({
                 ? currentActor.value
                 : "body",
           },
-          h(Transition, { name: "fade" }, () => [
-            isSpotlightShow.value
-              ? h("div", {
-                  class: "vue-stage-play__spotlight-bulb",
-                  style: bulbStyle.value,
-                  onTransitionend: () => {
-                    isFloat.value = false;
-                  },
-                })
-              : null,
-          ]),
+          h(
+            Transition as any,
+            {
+              css: false,
+              onEnter: enterTransition,
+              onLeave: leaveTransition,
+            },
+            () => [
+              isSpotlightShow.value
+                ? h("div", {
+                    class: "vue-stage-play__spotlight-bulb",
+                    style: bulbStyle.value,
+                    onTransitionend: () => {
+                      isFloat.value = false;
+                    },
+                  })
+                : null,
+            ],
+          ),
         ),
       ];
     };

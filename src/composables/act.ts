@@ -4,10 +4,12 @@ import { useBodyScrollFixed } from "../composables/bodyScrollFixed";
 
 const { reset } = useBodyScrollFixed();
 
-const acts = reactive<Record<string, Ref<HTMLElement | null>[]>>({});
+const acts = reactive<Record<string, (Ref<HTMLElement | null> | undefined)[]>>(
+  {},
+);
 
 const currentActName = ref<string>();
-const currentAct = computed<Ref<HTMLElement | null>[]>(() => {
+const currentAct = computed<(Ref<HTMLElement | null> | undefined)[]>(() => {
   if (!currentActName.value) return [];
   if (!acts[currentActName.value]) return [];
   return acts[currentActName.value];
@@ -17,7 +19,7 @@ const currentActSceneList = computed<number[]>(() => {
   if (!currentAct.value) return [];
   return currentAct.value
     .map((actor, index) => (actor !== undefined ? index : undefined))
-    .filter((index) => index !== undefined);
+    .filter((index) => index !== undefined) as number[];
 });
 const currentSceneOrder = computed<number>(() => {
   if (!currentAct.value || !currentScene.value) return 0;
@@ -31,7 +33,8 @@ const currentActor = computed<HTMLElement | null | undefined>(() => {
   if (!currentActName.value) return undefined;
   if (!currentAct.value.length) return undefined;
   if (currentScene.value === undefined) return undefined;
-  return currentAct.value[currentScene.value].value;
+  const actor = currentAct.value[currentScene.value];
+  return actor !== undefined ? actor.value : undefined;
 });
 
 const totalSceneCount = computed<number>(() => {
