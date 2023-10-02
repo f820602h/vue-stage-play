@@ -18,7 +18,8 @@ import {
   InjectionSpotlightOptions,
 } from "../constants";
 import { defaultOptions } from "../options";
-import { useStagePlay } from "../composables/act";
+import { useAct } from "../composables/act";
+import { useFadeTransition } from "../composables/fade";
 import { isClient, useElementBounding } from "@vueuse/core";
 
 export const StagePlaySpotlight = defineComponent({
@@ -38,7 +39,8 @@ export const StagePlaySpotlight = defineComponent({
     },
   },
   setup(props, { slots }) {
-    const { currentActName, currentActor } = useStagePlay();
+    const { isFloat, currentActName, currentActor } = useAct();
+    const { enterTransition, leaveTransition } = useFadeTransition(600);
 
     const globalOptions = inject(InjectionGlobalOptions, {});
     const localOptions = ref<SpotlightProps>({});
@@ -65,66 +67,30 @@ export const StagePlaySpotlight = defineComponent({
       spotlightBorderRadius: options.value.spotlightBorderRadius,
     });
 
-    const root = isClient
-      ? document.documentElement || document.body
-      : undefined;
-
-    const isFloat = ref<boolean>(true);
-    const isSpotlightShow = ref(false);
-
-    watch(currentActName, () => {
-      if (currentActName.value) isSpotlightShow.value = true;
-    });
-
     const currentActorRef = ref<HTMLElement | null>(null);
     const { top, left, width, height } = useElementBounding(currentActorRef);
 
     watch(currentActor, (newVal) => {
       isFloat.value = true;
       if (newVal) {
-        currentActorRef.value = newVal;
+        nextTick(() => {
+          currentActorRef.value = newVal;
+        });
       } else if (!newVal && currentActName.value === undefined) {
         nextTick(() => {
           currentActorRef.value = null;
-          isSpotlightShow.value = false;
         });
       }
     });
 
-    function getEnterKeyframes() {
-      return [{ opacity: 0 }, { opacity: 1 }];
-    }
-
-    function animateTransition(
-      element: HTMLElement,
-      done: () => void,
-      keyframes: Keyframe[],
-      options: KeyframeAnimationOptions & {
-        duration: number;
-        easing: string;
-      },
-    ) {
-      const animation = element.animate(keyframes, options);
-      animation.onfinish = () => {
-        done();
-      };
-    }
-
-    function enterTransition(element: HTMLElement, done: () => void) {
-      const keyframes = getEnterKeyframes();
-      const options = { duration: 600, easing: "ease" };
-      animateTransition(element, done, keyframes, options);
-    }
-
-    function leaveTransition(element: HTMLElement, done: () => void) {
-      const keyframes = getEnterKeyframes().reverse();
-      const options = { duration: 600, easing: "ease" };
-      animateTransition(element, done, keyframes, options);
-    }
+    const root = isClient
+      ? document.documentElement || document.body
+      : undefined;
 
     const bulbStyle = computed<StyleValue>(() => {
       return {
         position: "absolute",
+        zIndex: 99995,
 
         top:
           !isFloat.value && currentActor.value
@@ -134,13 +100,13 @@ export const StagePlaySpotlight = defineComponent({
           !isFloat.value && currentActor.value
             ? "0"
             : `${left.value + (root?.scrollLeft || 0)}px`,
-        zIndex: 99995,
 
         width: width.value ? width.value + "px" : "100%",
         height: height.value ? height.value + "px" : "100%",
-        borderRadius: `${options.value.spotlightBorderRadius}px`,
 
+        borderRadius: `${options.value.spotlightBorderRadius}px`,
         boxShadow: `${options.value.spotlightDarkZoneColor} 0px 0px 0px 5000px`,
+
         transition: "all 0.6s ease",
         pointerEvents: "none",
       };
@@ -151,12 +117,7 @@ export const StagePlaySpotlight = defineComponent({
         slots.default?.(),
         h(
           Teleport,
-          {
-            to:
-              !isFloat.value && currentActor.value
-                ? currentActor.value
-                : "body",
-          },
+          { to: (!isFloat.value && currentActor.value) || "body" },
           h(
             Transition as any,
             {
@@ -165,7 +126,7 @@ export const StagePlaySpotlight = defineComponent({
               onLeave: leaveTransition,
             },
             () => [
-              isSpotlightShow.value
+              currentActorRef.value
                 ? h("div", {
                     class: "vue-stage-play__spotlight-bulb",
                     style: bulbStyle.value,
