@@ -27,3 +27,32 @@ app.use(stagePlayPlugin({
 ```
 
 Global configuration can affect all `<StagePlaySpotlight>` and `<StagePlayScene>` within your application. However, directly passing props to the components will still override them.
+
+## Global Configuration Options
+
+Detailed explanations of the options are available in sections [StagePlaySpotlight](./stage-play-spotlight.md) and [StagePlayScene](./stage-play-scene.md).
+
+| Prop                    | Type                                                  |
+| ----------------------- | ----------------------------------------------------- |
+| spotlightPadding        | `number`                                              |
+| spotlightBorderRadius   | `number`                                              |
+| spotlightDarkZoneColor  | `string`                                              |
+| allowInteract           | `boolean`                                             |
+| allowLeave              | `boolean`                                             |
+| cameraFollow            | `boolean`                                             |
+| cameraFollowOptions     | `number`                                              |
+| cameraFollowOffset      | `number`                                              |
+| cameraFixAfterFollow    | `boolean`                                             |
+| voiceOverAutoPlacement  | `boolean`                                             |
+| voiceOverPlacement      | `string`                                              |
+| voiceOverAlign          | `string`                                              |
+| voiceOverWidth          | `number`                                              |
+| voiceOverTitle          | `string`                                              |
+| voiceOverContent        | `string`                                              |
+| voiceOverPrevButtonText | `string`                                              |
+| voiceOverNextButtonText | `string`                                              |
+| voiceOverDoneButtonText | `string`                                              |
+| onBeforeCut             | `(scopedProps: ScopedProps) => void \| Promise<void>` |
+| onAfterCut              | `(scopedProps: ScopedProps) => void \| Promise<void>` |
+| onActivated             | `(scopedProps: ScopedProps) => void \| Promise<void>` |
+| onDeactivated           | `(scopedProps: ScopedProps) => void \| Promise<void>` |
