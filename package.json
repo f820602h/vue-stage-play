@@ -1,6 +1,6 @@
 {
   "name": "vue-stage-play",
-  "description": "Designing an guided tour for your website with vue components, much like directing a stage play.",
+  "description": "Designing a guided tour for your website with vue components, much like directing a stage play.",
   "private": false,
   "version": "0.1.1",
   "author": "max.lee <f820602h@gmail.com>",

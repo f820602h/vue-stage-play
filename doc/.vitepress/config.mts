@@ -10,11 +10,11 @@ export default defineConfig({
     ['meta', { property: 'og:image', content: "https://f820602h.github.io/vue-stage-play/ogImage.png" }],
     ['meta', { property: 'og:url', content: "https://f820602h.github.io/vue-stage-play/" }],
     ['meta', { property: 'og:title', content: 'Vue Stage Play' }],
-    ['meta', { property: 'og:description', content: 'Designing an guided tour for your website with vue components, much like directing a stage play' }],
+    ['meta', { property: 'og:description', content: 'Designing a guided tour for your website with vue components, much like directing a stage play' }],
   ],
 
   title: "Vue Stage Play",
-  description: "Designing an guided tour for your website with vue components, much like directing a stage play",
+  description: "Designing a guided tour for your website with vue components, much like directing a stage play",
 
   markdown: {
     theme: {

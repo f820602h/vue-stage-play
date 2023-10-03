@@ -8,7 +8,7 @@
 <h1 align="center" style="border: 0px">Vue Stage Play</h1>
 
 <p align="center">
-Designing an guided tour for your website with vue components, much like directing a stage play.
+Designing a guided tour for your website with vue components, much like directing a stage play.
 </p>
 
 <p align="center">

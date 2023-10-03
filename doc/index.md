@@ -5,7 +5,7 @@ layout: home
 hero:
   name: "VueStagePlay"
   text: "Website Guided Tour Components"
-  tagline: Designing an guided tour for your website with vue components, much like directing a stage play
+  tagline: Designing a guided tour for your website with vue components, much like directing a stage play
   actions:
     - theme: brand
       text: Get Started
