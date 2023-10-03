@@ -345,21 +345,19 @@ export const StagePlayScene = defineComponent({
       { deep: true, immediate: true },
     );
 
-    watch(spotlight, async (val) => {
+    watch(spotlight, (val) => {
       reset();
-      if (!val) {
-        options.value.onDeactivated(scopedProps);
-        return;
-      }
-
-      if (options.value.cameraFollow) {
-        await smoothScroll(val);
-      }
+      if (!val) options.value.onDeactivated(scopedProps);
     });
 
-    watch(isFloat, (val) => {
+    watch(isFloat, async (val) => {
       if (val) return;
-      if (options.value.cameraFixAfterFollow) fixed();
+      else {
+        if (isCurrentScene.value && options.value.cameraFollow) {
+          await smoothScroll(spotlight.value);
+          if (options.value.cameraFixAfterFollow) fixed();
+        }
+      }
     });
 
     onBeforeUnmount(() => {

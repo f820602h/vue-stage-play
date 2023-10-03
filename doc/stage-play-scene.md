@@ -22,7 +22,7 @@ import { StagePlayScene } from 'vue-stage-play'
 ```
 
 :::tip
-`<StagePlayScene>` will render an actual element. Hence, you may need to set the `margin` to it, rather than the highlighted elements.
+`<StagePlayScene>` will render an actual element. Hence, you may need to set some style to it, rather than the highlighted elements. For example, `margin`, `position`, and so forth.
 :::
 
 ## Props

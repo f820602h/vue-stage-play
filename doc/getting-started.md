@@ -52,9 +52,6 @@ Next, import `<StagePlayScene>` where you want to highlight elements and wrap th
 
 Set the `actName` and `scene` for `<StagePlayScene>`, and call the `action` function from the slot props.
 
-<StagePlayScene :actName="actName" :scene="1" voiceOverPlacement="right">
-<template #default="slotProp">
-
 ``` vue{2,6,14,18}
 <script setup lang="ts">
 import { StagePlayScene } from 'vue-stage-play'
@@ -76,6 +73,9 @@ import { StagePlayScene } from 'vue-stage-play'
   </StagePlayScene>
 </template>
 ```
+
+<StagePlayScene :actName="actName" :scene="1" voiceOverPlacement="right">
+<template #default="slotProp">
 
 <button class="btn" style="background: #34495e; color: white; border-radius: 4px; padding: 2px 12px" @click="slotProp.action()">Live Demo</button>
 

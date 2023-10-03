@@ -107,7 +107,7 @@ export const StagePlaySpotlight = defineComponent({
         borderRadius: `${options.value.spotlightBorderRadius}px`,
         boxShadow: `${options.value.spotlightDarkZoneColor} 0px 0px 0px 5000px`,
 
-        transition: "all 0.6s ease",
+        transition: "all 0.35s ease",
         pointerEvents: "none",
       };
     });
