@@ -353,7 +353,11 @@ export const StagePlayScene = defineComponent({
     watch(isFloat, async (val) => {
       if (val) return;
       else {
-        if (isCurrentScene.value && options.value.cameraFollow) {
+        if (
+          isCurrentScene.value &&
+          options.value.cameraFollow &&
+          spotlight.value
+        ) {
           await smoothScroll(spotlight.value);
           if (options.value.cameraFixAfterFollow) fixed();
         }
