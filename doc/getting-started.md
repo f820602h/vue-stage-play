@@ -74,7 +74,7 @@ import { StagePlayScene } from 'vue-stage-play'
 </template>
 ```
 
-<StagePlayScene :actName="actName" :scene="1" voiceOverPlacement="right">
+<StagePlayScene :actName="actName" :scene="1">
 <template #default="slotProp">
 
 <button class="btn" style="background: #34495e; color: white; border-radius: 4px; padding: 2px 12px" @click="slotProp.action()">Live Demo</button>
