@@ -11,6 +11,7 @@ export default defineConfig({
     ['meta', { property: 'og:url', content: "https://f820602h.github.io/vue-stage-play/" }],
     ['meta', { property: 'og:title', content: 'Vue Stage Play' }],
     ['meta', { property: 'og:description', content: 'Designing a guided tour for your website with vue components, much like directing a stage play' }],
+    ['style', {}, `#VPContent {max-width: 100vw; overflow: hidden;}`]
   ],
 
   title: "Vue Stage Play",
