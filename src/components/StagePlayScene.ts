@@ -161,15 +161,19 @@ export const StagePlayScene = defineComponent({
     }));
 
     function setLocalOptions(options: GlobalOptions = {}): void {
-      localOptions.value = JSON.parse(JSON.stringify(options));
+      const _options: { [key: string]: any } = { ...options };
+      for (const key in _options) {
+        if (_options[key] === undefined) delete _options[key];
+      }
+      localOptions.value = _options;
     }
 
     watch(
       () => props,
       async () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { actName, scene, skip, tag, ...options } = props;
-        setLocalOptions(options);
+        const { actName, scene, skip, tag, ...other } = props;
+        setLocalOptions(other);
       },
       { deep: true, immediate: true },
     );
@@ -220,10 +224,10 @@ export const StagePlayScene = defineComponent({
       _action(actName || options.value.actName, scene);
     }
 
-    function cut(): void {
-      options.value.onBeforeCut(scopedProps);
+    async function cut(): Promise<void> {
+      await options.value.onBeforeCut(scopedProps);
       _cut();
-      options.value.onAfterCut(scopedProps);
+      await options.value.onAfterCut(scopedProps);
     }
 
     const {
@@ -345,8 +349,9 @@ export const StagePlayScene = defineComponent({
       { deep: true, immediate: true },
     );
 
-    watch(isCurrentScene, (val) => {
-      if (!val) options.value.onDeactivated(scopedProps);
+    watch(isCurrentScene, async (val) => {
+      if (val) await options.value.onActivated(scopedProps);
+      else await options.value.onDeactivated(scopedProps);
     });
 
     watch(isFloat, async (val) => {
@@ -501,19 +506,7 @@ export const StagePlayScene = defineComponent({
           },
         },
         [
-          slots.default?.(scopedProps).map((node) => {
-            node.props = {
-              ...node.props,
-              style: {
-                ...node.props?.style,
-                pointerEvents:
-                  isCurrentScene.value && !options.value.allowInteract
-                    ? "none"
-                    : "auto",
-              },
-            };
-            return node;
-          }),
+          slots.default?.(scopedProps),
           h(
             "div",
             {
@@ -527,7 +520,10 @@ export const StagePlayScene = defineComponent({
                 bottom: `-${options.value.spotlightPadding || 0}px`,
                 left: `-${options.value.spotlightPadding || 0}px`,
                 right: `-${options.value.spotlightPadding || 0}px`,
-                pointerEvents: "none",
+                pointerEvents:
+                  isCurrentScene.value && !options.value.allowInteract
+                    ? undefined
+                    : "none",
               },
             },
             [
