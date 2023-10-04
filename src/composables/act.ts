@@ -1,6 +1,7 @@
 import { Ref } from "vue";
 import { ref, reactive, computed } from "vue";
 import { useBodyScrollFixed } from "../composables/bodyScrollFixed";
+import { errorMessages, findLastIndex } from "../utils";
 
 const { reset } = useBodyScrollFixed();
 
@@ -22,7 +23,7 @@ const currentActSceneList = computed<number[]>(() => {
     .filter((index) => index !== undefined) as number[];
 });
 const currentSceneOrder = computed<number>(() => {
-  if (!currentAct.value || !currentScene.value) return 0;
+  if (!currentAct.value || !currentScene.value) return -1;
   return currentActSceneList.value.findIndex(
     (index) => index === currentScene.value,
   );
@@ -52,9 +53,7 @@ const hasNextScene = computed<boolean>(() => {
 
 function action(actName: string, scene?: number): void {
   if (currentActName.value) {
-    console.warn(
-      `[Vue Stage Play] Act ${currentActName.value} already in action`,
-    );
+    console.warn(errorMessages.alreadyPlayingAct(currentActName.value));
     return;
   }
 
@@ -62,12 +61,12 @@ function action(actName: string, scene?: number): void {
   const act = Array.isArray(specifyAct) ? specifyAct : [];
 
   if (act.length === 0) {
-    console.warn(`[Vue Stage Play] No scene in act ${actName}`);
+    console.warn(errorMessages.noSceneInAct(actName));
     return;
   }
 
   if (scene !== undefined && !act[scene]) {
-    console.warn(`[Vue Stage Play] No scene ${scene} in act ${actName}`);
+    console.warn(errorMessages.noSpecifiedSceneInAct(actName, scene));
     return;
   }
 
@@ -87,6 +86,9 @@ function addScene(
   scene: number,
   actor: Ref<HTMLElement | null>,
 ): void {
+  if (scene < 0) {
+    throw new Error(errorMessages.sceneNumberShouldBePositive());
+  }
   if (!acts[actName]) acts[actName] = [];
 
   const scenes = acts[actName];
@@ -96,7 +98,7 @@ function addScene(
 function removeScene(actName: string, scene: number): void {
   if (!acts[actName]) return;
   if (currentScene.value === scene) {
-    console.warn(`[Vue Stage Play] Can't remove current scene`);
+    console.warn(errorMessages.canNotRemoveCurrentScene());
     return;
   }
 
@@ -107,14 +109,15 @@ function removeScene(actName: string, scene: number): void {
 function prevScene(): void {
   const scene = currentScene.value;
   if (!currentAct.value || scene === undefined) {
-    console.warn(`[Vue Stage Play] No playing act.`);
+    console.warn(errorMessages.noPlayingAct());
     return;
   }
   if (!hasPrevScene.value) {
-    console.warn(`[Vue Stage Play] No previous scene.`);
+    console.warn(errorMessages.noPreviousScene());
     return;
   }
-  currentScene.value = currentAct.value.findLastIndex(
+  currentScene.value = findLastIndex(
+    currentAct.value,
     (actor, index) => index < scene && actor !== undefined,
   );
 }
@@ -122,11 +125,11 @@ function prevScene(): void {
 function nextScene(): void {
   const scene = currentScene.value;
   if (!currentAct.value || scene === undefined) {
-    console.warn(`[Vue Stage Play] No playing act.`);
+    console.warn(errorMessages.noPlayingAct());
     return;
   }
   if (!hasNextScene.value) {
-    console.warn(`[Vue Stage Play] No next scene.`);
+    console.warn(errorMessages.noNextScene());
     return;
   }
   currentScene.value = currentAct.value.findIndex(
@@ -136,11 +139,11 @@ function nextScene(): void {
 
 function jumpToScene(scene: number): void {
   if (!currentAct.value || currentScene.value === undefined) {
-    console.warn(`[Vue Stage Play] No playing act.`);
+    console.warn(errorMessages.noPlayingAct());
     return;
   }
   if (currentAct.value[scene] === undefined) {
-    console.warn("[Vue Stage Play] No such scene");
+    console.warn(errorMessages.noSpecifiedScene());
     return;
   }
   currentScene.value = scene;

@@ -10,7 +10,6 @@ import {
   Teleport,
   inject,
   Transition,
-  nextTick,
 } from "vue";
 import { SpotlightProps, ResolvedSpotlightProps } from "../types";
 import {
@@ -39,7 +38,7 @@ export const StagePlaySpotlight = defineComponent({
     },
   },
   setup(props, { slots }) {
-    const { isFloat, currentActName, currentActor } = useAct();
+    const { isFloat, currentActor } = useAct();
     const { enterTransition, leaveTransition } = useFadeTransition(600);
 
     const globalOptions = inject(InjectionGlobalOptions, {});
@@ -64,23 +63,12 @@ export const StagePlaySpotlight = defineComponent({
 
     provide(InjectionSpotlightOptions, {
       spotlightPadding: options.value.spotlightPadding,
-      spotlightBorderRadius: options.value.spotlightBorderRadius,
     });
 
-    const currentActorRef = ref<HTMLElement | null>(null);
-    const { top, left, width, height } = useElementBounding(currentActorRef);
+    const { top, left, width, height } = useElementBounding(currentActor);
 
-    watch(currentActor, (newVal) => {
+    watch(currentActor, () => {
       isFloat.value = true;
-      if (newVal) {
-        nextTick(() => {
-          currentActorRef.value = newVal;
-        });
-      } else if (!newVal && currentActName.value === undefined) {
-        nextTick(() => {
-          currentActorRef.value = null;
-        });
-      }
     });
 
     const root = isClient
@@ -94,21 +82,21 @@ export const StagePlaySpotlight = defineComponent({
 
         top:
           !isFloat.value && currentActor.value
-            ? "0"
+            ? "0px"
             : `${top.value + (root?.scrollTop || 0)}px`,
         left:
           !isFloat.value && currentActor.value
-            ? "0"
+            ? "0px"
             : `${left.value + (root?.scrollLeft || 0)}px`,
 
         width: width.value ? width.value + "px" : "100%",
         height: height.value ? height.value + "px" : "100%",
 
-        borderRadius: `
-        ${options.value.spotlightBorderRadius}px
-        ${options.value.spotlightBorderRadius}px
-        ${options.value.spotlightBorderRadius}px
-        ${options.value.spotlightBorderRadius - 0.001}px`,
+        borderRadius: `${options.value.spotlightBorderRadius}px ${
+          options.value.spotlightBorderRadius
+        }px ${options.value.spotlightBorderRadius}px ${
+          options.value.spotlightBorderRadius - 0.001
+        }px`,
         boxShadow: `${options.value.spotlightDarkZoneColor} 0px 0px 0px 3000px`,
 
         transition: "all 0.35s ease",
@@ -121,7 +109,7 @@ export const StagePlaySpotlight = defineComponent({
         slots.default?.(),
         h(
           Teleport,
-          { to: (!isFloat.value && currentActor.value) || "body" },
+          { to: (!isFloat.value && currentActor?.value) || "body" },
           h(
             Transition as any,
             {
@@ -130,7 +118,7 @@ export const StagePlaySpotlight = defineComponent({
               onLeave: leaveTransition,
             },
             () => [
-              currentActorRef.value
+              currentActor?.value
                 ? h("div", {
                     class: "vue-stage-play__spotlight-bulb",
                     style: bulbStyle.value,

@@ -17,7 +17,7 @@ function animateTransition(
   };
 }
 
-export function useFadeTransition(duration) {
+export function useFadeTransition(duration: number) {
   function enterTransition(element: HTMLElement, done: () => void) {
     const keyframes = getEnterKeyframes();
     const options = { duration, easing: "ease" };

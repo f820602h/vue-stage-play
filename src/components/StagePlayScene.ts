@@ -25,13 +25,13 @@ import { useWindowSize, useElementBounding } from "@vueuse/core";
 
 export const StagePlayScene = defineComponent({
   slots: Object as SlotsType<{
-    default: ScopedProps;
-    voiceOver: ScopedProps;
-    voHeader: ScopedProps;
-    voCloseIcon: ScopedProps;
-    voBody: ScopedProps;
-    voFooter: ScopedProps;
-    voFooterButton: ScopedProps;
+    default?: ScopedProps;
+    voiceOver?: ScopedProps;
+    voHeader?: ScopedProps;
+    voCloseIcon?: ScopedProps;
+    voBody?: ScopedProps;
+    voFooter?: ScopedProps;
+    voFooterButton?: ScopedProps;
   }>,
   name: "StagePlayScene",
   props: {
@@ -345,12 +345,12 @@ export const StagePlayScene = defineComponent({
       { deep: true, immediate: true },
     );
 
-    watch(spotlight, (val) => {
-      reset();
+    watch(isCurrentScene, (val) => {
       if (!val) options.value.onDeactivated(scopedProps);
     });
 
     watch(isFloat, async (val) => {
+      reset();
       if (val) return;
       else {
         if (
@@ -514,292 +514,287 @@ export const StagePlayScene = defineComponent({
             };
             return node;
           }),
-          isCurrentScene.value
-            ? h(
-                "div",
+          h(
+            "div",
+            {
+              id: `vue-stage-play__spotlight-${options.value.actName}-${options.value.scene}`,
+              class: "vue-stage-play__spotlight",
+              ref: spotlight,
+              style: {
+                position: "absolute",
+                scrollMargin: `${options.value.cameraFollowOffset}px`,
+                top: `-${options.value.spotlightPadding || 0}px`,
+                bottom: `-${options.value.spotlightPadding || 0}px`,
+                left: `-${options.value.spotlightPadding || 0}px`,
+                right: `-${options.value.spotlightPadding || 0}px`,
+                pointerEvents: "none",
+              },
+            },
+            [
+              h(
+                Transition as any,
                 {
-                  id: `vue-stage-play__spotlight-${options.value.actName}-${options.value.scene}`,
-                  class: "vue-stage-play__spotlight",
-                  ref: spotlight,
-                  style: {
-                    position: "absolute",
-                    scrollMargin: `${options.value.cameraFollowOffset}px`,
-                    inset: `-${options.value.spotlightPadding || 0}px`,
-                    borderRadius: `${
-                      options.value.spotlightBorderRadius || 0
-                    }px`,
-                    overflow: "none",
-                    pointerEvents: "none",
-                  },
+                  css: false,
+                  onEnter: enterTransition,
+                  onLeave: leaveTransition,
                 },
-                [
-                  h(
-                    Transition as any,
-                    {
-                      css: false,
-                      onEnter: enterTransition,
-                      onLeave: leaveTransition,
-                    },
-                    () => [
-                      !isFloat.value
-                        ? h(
-                            "div",
-                            {
-                              class: "vue-stage-play__voice-over",
-                              style: voiceOverStyle.value,
-                              ref: voiceOver,
-                            },
-                            [
-                              slots.voiceOver?.(scopedProps) ||
+                () => [
+                  isCurrentScene.value && !isFloat.value
+                    ? h(
+                        "div",
+                        {
+                          class: "vue-stage-play__voice-over",
+                          style: voiceOverStyle.value,
+                          ref: voiceOver,
+                        },
+                        [
+                          slots.voiceOver?.(scopedProps) ||
+                            h(
+                              "div",
+                              {
+                                class: "default__voice-over",
+                                style: {
+                                  width: `${options.value.voiceOverWidth}px`,
+                                  margin: "8px",
+                                  borderRadius: "8px",
+                                  boxShadow: "0 0 8px rgba(0, 0, 0, 0.2)",
+                                  backgroundColor: "#fff",
+                                },
+                              },
+                              [
                                 h(
                                   "div",
                                   {
-                                    class: "default__voice-over",
+                                    class: "default__voice-over__header",
                                     style: {
-                                      width: `${options.value.voiceOverWidth}px`,
-                                      margin: "8px",
-                                      borderRadius: "8px",
-                                      boxShadow: "0 0 8px rgba(0, 0, 0, 0.2)",
-                                      backgroundColor: "#fff",
+                                      position: "relative",
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                      alignItems: "center",
+                                      padding: "8px 12px",
+                                      borderBottom: "1px solid #ddd",
+                                      fontSize: "16px",
+                                      fontWeight: "bold",
+                                      lineHeight: "1",
                                     },
                                   },
                                   [
-                                    h(
-                                      "div",
-                                      {
-                                        class: "default__voice-over__header",
-                                        style: {
-                                          position: "relative",
-                                          display: "flex",
-                                          justifyContent: "space-between",
-                                          alignItems: "center",
-                                          padding: "8px 12px",
-                                          borderBottom: "1px solid #ddd",
-                                          fontSize: "16px",
-                                          fontWeight: "bold",
-                                          lineHeight: "1",
+                                    slots.voHeader?.(scopedProps) ||
+                                      h(
+                                        "div",
+                                        {
+                                          class:
+                                            "default__voice-over__header__content",
+                                          style: {
+                                            flexGrow: "1",
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis",
+                                            whiteSpace: "nowrap",
+                                          },
                                         },
-                                      },
-                                      [
-                                        slots.voHeader?.(scopedProps) ||
-                                          h(
-                                            "div",
-                                            {
-                                              class:
-                                                "efault__voice-over__header__content",
-                                              style: {
-                                                flexGrow: "1",
-                                                overflow: "hidden",
-                                                textOverflow: "ellipsis",
-                                                whiteSpace: "nowrap",
-                                              },
-                                            },
-                                            options.value.voiceOverTitle,
-                                          ),
-                                        slots.voCloseIcon?.(scopedProps) ||
-                                          h(
-                                            "svg",
-                                            {
-                                              class:
-                                                "default__voice-over__header__close",
-                                              style: {
-                                                position: "relative",
-                                                flexShrink: "0",
-                                                right: "-4px",
-                                                display: "block",
-                                                width: "24px",
-                                                height: "24px",
-                                                color: isIconHover.value
-                                                  ? "#292929"
-                                                  : "#7e7e7e",
-                                                cursor: "pointer",
-                                                transition:
-                                                  "all 0.2s ease-in-out",
-                                              },
-                                              xmlns:
-                                                "http://www.w3.org/2000/svg",
-                                              width: "16",
-                                              height: "16",
-                                              viewBox: "0 0 16 16",
-                                              fill: "currentColor",
-                                              onMouseenter: () => {
-                                                isIconHover.value = true;
-                                              },
-                                              onMouseleave: () => {
-                                                isIconHover.value = false;
-                                              },
-                                              onClick: () => cut(),
-                                            },
-                                            [
-                                              h("path", {
-                                                d: "M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z",
-                                              }),
-                                            ],
-                                          ),
-                                      ],
-                                    ),
-                                    h(
-                                      "div",
-                                      {
-                                        class: "default__voice-over__body",
-                                        style: {
-                                          position: "relative",
-                                          boxSizing: "border-box",
-                                          minHeight: "60px",
-                                          padding: "12px",
-                                          fontSize: "14px",
-                                          lineHeight: "1.5",
-                                          textAlign: "center",
-                                          whiteSpace: "pre-wrap",
+                                        options.value.voiceOverTitle,
+                                      ),
+                                    slots.voCloseIcon?.(scopedProps) ||
+                                      h(
+                                        "svg",
+                                        {
+                                          class:
+                                            "default__voice-over__header__close",
+                                          style: {
+                                            position: "relative",
+                                            flexShrink: "0",
+                                            right: "-4px",
+                                            display: "block",
+                                            width: "24px",
+                                            height: "24px",
+                                            color: isIconHover.value
+                                              ? "#292929"
+                                              : "#7e7e7e",
+                                            cursor: "pointer",
+                                            transition: "all 0.2s ease-in-out",
+                                          },
+                                          xmlns: "http://www.w3.org/2000/svg",
+                                          width: "16",
+                                          height: "16",
+                                          viewBox: "0 0 16 16",
+                                          fill: "currentColor",
+                                          onMouseenter: () => {
+                                            isIconHover.value = true;
+                                          },
+                                          onMouseleave: () => {
+                                            isIconHover.value = false;
+                                          },
+                                          onClick: () => cut(),
                                         },
-                                      },
-                                      [
-                                        slots.voBody?.(scopedProps) ||
-                                          options.value.voiceOverContent,
-                                      ],
-                                    ),
-                                    h(
-                                      "div",
-                                      {
-                                        class: "default__voice-over__footer",
-                                        style: {
-                                          position: "relative",
-                                          display: "flex",
-                                          justifyContent: "space-between",
-                                          alignItems: "center",
-                                          padding: "8px 12px",
-                                          borderTop: "1px solid #ddd",
-                                        },
-                                      },
-                                      [
-                                        slots.voFooter?.(scopedProps) ||
-                                          h(
-                                            "div",
-                                            {
-                                              class:
-                                                "default__voice-over__footer__scene",
-                                              style: {
-                                                fontSize: "14px",
-                                                color: "#7e7e7e",
-                                              },
-                                            },
-                                            `${currentSceneOrder.value + 1} / ${
-                                              totalSceneCount.value
-                                            }`,
-                                          ),
-                                        slots.voFooterButton?.(scopedProps) ||
-                                          h(
-                                            "div",
-                                            {
-                                              class:
-                                                "default__voice-over__footer__btns",
-                                              style: {
-                                                display: "flex",
-                                                gap: "8px",
-                                              },
-                                            },
-                                            [
-                                              hasPrevScene.value &&
-                                                h(
-                                                  "button",
-                                                  {
-                                                    class:
-                                                      "default__voice-over__footer__btn",
-                                                    style: {
-                                                      padding: "6px 16px",
-                                                      border: "1px solid #ddd",
-                                                      borderRadius: "4px",
-                                                      fontSize: "14px",
-                                                      fontWeight: "normal",
-                                                      lineHeight: "16px",
-                                                      color: "#292929",
-                                                      backgroundColor:
-                                                        isPrevButtonHover.value
-                                                          ? "#ddd"
-                                                          : "#f1f1f1",
-                                                      transition:
-                                                        "all 0.2s ease-in-out",
-                                                      cursor: "pointer",
-                                                    },
-                                                    onClick: () => prevScene(),
-                                                  },
-                                                  options.value
-                                                    .voiceOverPrevButtonText,
-                                                ),
-                                              hasNextScene.value &&
-                                                h(
-                                                  "button",
-                                                  {
-                                                    class:
-                                                      "default__voice-over__footer__btn",
-                                                    style: {
-                                                      padding: "6px 16px",
-                                                      border: "1px solid #ddd",
-                                                      borderRadius: "4px",
-                                                      fontSize: "14px",
-                                                      fontWeight: "normal",
-                                                      lineHeight: "16px",
-                                                      color: "#292929",
-                                                      backgroundColor:
-                                                        isNextButtonHover.value
-                                                          ? "#ddd"
-                                                          : "#f1f1f1",
-                                                      transition:
-                                                        "all 0.2s ease-in-out",
-                                                      cursor: "pointer",
-                                                    },
-                                                    onClick: () => nextScene(),
-                                                  },
-                                                  options.value
-                                                    .voiceOverNextButtonText,
-                                                ),
-                                              !hasNextScene.value &&
-                                                h(
-                                                  "button",
-                                                  {
-                                                    class:
-                                                      "default__voice-over__footer__btn",
-                                                    style: {
-                                                      padding: "6px 16px",
-                                                      border: "1px solid #ddd",
-                                                      borderRadius: "4px",
-                                                      fontSize: "14px",
-                                                      fontWeight: "normal",
-                                                      lineHeight: "16px",
-                                                      color: "#292929",
-                                                      backgroundColor:
-                                                        isDoneButtonHover.value
-                                                          ? "#ddd"
-                                                          : "#f1f1f1",
-                                                      transition:
-                                                        "all 0.2s ease-in-out",
-                                                      cursor: "pointer",
-                                                    },
-                                                    onClick: () => cut(),
-                                                  },
-                                                  options.value
-                                                    .voiceOverDoneButtonText,
-                                                ),
-                                            ],
-                                          ),
-                                      ],
-                                    ),
+                                        [
+                                          h("path", {
+                                            d: "M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z",
+                                          }),
+                                        ],
+                                      ),
                                   ],
                                 ),
-                            ],
-                          )
-                        : undefined,
-                    ],
-                  ),
+                                h(
+                                  "div",
+                                  {
+                                    class: "default__voice-over__body",
+                                    style: {
+                                      position: "relative",
+                                      boxSizing: "border-box",
+                                      minHeight: "60px",
+                                      padding: "12px",
+                                      fontSize: "14px",
+                                      lineHeight: "1.5",
+                                      textAlign: "center",
+                                      whiteSpace: "pre-wrap",
+                                    },
+                                  },
+                                  [
+                                    slots.voBody?.(scopedProps) ||
+                                      options.value.voiceOverContent,
+                                  ],
+                                ),
+                                h(
+                                  "div",
+                                  {
+                                    class: "default__voice-over__footer",
+                                    style: {
+                                      position: "relative",
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                      alignItems: "center",
+                                      padding: "8px 12px",
+                                      borderTop: "1px solid #ddd",
+                                    },
+                                  },
+                                  [
+                                    slots.voFooter?.(scopedProps) ||
+                                      h(
+                                        "div",
+                                        {
+                                          class:
+                                            "default__voice-over__footer__scene",
+                                          style: {
+                                            fontSize: "14px",
+                                            color: "#7e7e7e",
+                                          },
+                                        },
+                                        `${currentSceneOrder.value + 1} / ${
+                                          totalSceneCount.value
+                                        }`,
+                                      ),
+                                    slots.voFooterButton?.(scopedProps) ||
+                                      h(
+                                        "div",
+                                        {
+                                          class:
+                                            "default__voice-over__footer__btns",
+                                          style: {
+                                            display: "flex",
+                                            gap: "8px",
+                                          },
+                                        },
+                                        [
+                                          hasPrevScene.value &&
+                                            h(
+                                              "button",
+                                              {
+                                                class:
+                                                  "default__voice-over__footer__btn",
+                                                style: {
+                                                  padding: "6px 16px",
+                                                  border: "1px solid #ddd",
+                                                  borderRadius: "4px",
+                                                  fontSize: "14px",
+                                                  fontWeight: "normal",
+                                                  lineHeight: "16px",
+                                                  color: "#292929",
+                                                  backgroundColor:
+                                                    isPrevButtonHover.value
+                                                      ? "#ddd"
+                                                      : "#f1f1f1",
+                                                  transition:
+                                                    "all 0.2s ease-in-out",
+                                                  cursor: "pointer",
+                                                },
+                                                onClick: () => prevScene(),
+                                              },
+                                              options.value
+                                                .voiceOverPrevButtonText,
+                                            ),
+                                          hasNextScene.value &&
+                                            h(
+                                              "button",
+                                              {
+                                                class:
+                                                  "default__voice-over__footer__btn",
+                                                style: {
+                                                  padding: "6px 16px",
+                                                  border: "1px solid #ddd",
+                                                  borderRadius: "4px",
+                                                  fontSize: "14px",
+                                                  fontWeight: "normal",
+                                                  lineHeight: "16px",
+                                                  color: "#292929",
+                                                  backgroundColor:
+                                                    isNextButtonHover.value
+                                                      ? "#ddd"
+                                                      : "#f1f1f1",
+                                                  transition:
+                                                    "all 0.2s ease-in-out",
+                                                  cursor: "pointer",
+                                                },
+                                                onClick: () => nextScene(),
+                                              },
+                                              options.value
+                                                .voiceOverNextButtonText,
+                                            ),
+                                          !hasNextScene.value &&
+                                            h(
+                                              "button",
+                                              {
+                                                class:
+                                                  "default__voice-over__footer__btn",
+                                                style: {
+                                                  padding: "6px 16px",
+                                                  border: "1px solid #ddd",
+                                                  borderRadius: "4px",
+                                                  fontSize: "14px",
+                                                  fontWeight: "normal",
+                                                  lineHeight: "16px",
+                                                  color: "#292929",
+                                                  backgroundColor:
+                                                    isDoneButtonHover.value
+                                                      ? "#ddd"
+                                                      : "#f1f1f1",
+                                                  transition:
+                                                    "all 0.2s ease-in-out",
+                                                  cursor: "pointer",
+                                                },
+                                                onClick: () => cut(),
+                                              },
+                                              options.value
+                                                .voiceOverDoneButtonText,
+                                            ),
+                                        ],
+                                      ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                        ],
+                      )
+                    : undefined,
                 ],
-              )
-            : undefined,
+              ),
+            ],
+          ),
           isCurrentScene.value && isFloat.value
             ? h(Teleport, { to: "body" }, [
                 h(
                   "div",
                   {
-                    class: "vue-stage-play__scene__scroll-mask",
+                    class: "vue-stage-play__scroll-mask",
                     style: {
                       position: "fixed",
                       top: "0",
@@ -818,6 +813,7 @@ export const StagePlayScene = defineComponent({
           isCurrentScene.value
             ? h(Teleport, { to: "body" }, [
                 h("div", {
+                  class: "vue-stage-play__click-mask",
                   style: {
                     position: "fixed",
                     top: 0,
