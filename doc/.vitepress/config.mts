@@ -29,7 +29,7 @@ export default defineConfig({
     nav: [
       { text: 'Guide', link: '/getting-started' },
       { text: 'API Reference', link: '/stage-play-spotlight' },
-      { text: 'Examples', link: '/basic-example' }
+      { text: 'Examples', link: '/examples/basic-example' }
     ],
 
     sidebar: [
@@ -51,9 +51,11 @@ export default defineConfig({
       {
         text: 'Examples',
         items: [
-          { text: 'Basic Example', link: '/basic-example' },
-          { text: 'Voice Over Placement', link: '/voice-over-placement' },
-          { text: 'Voice Over Customizing', link: '/voice-over-customizing' },
+          { text: 'Basic Example', link: '/examples/basic-example' },
+          { text: 'Nested Example', link: '/examples/nested-example' },
+          { text: 'Voice Over Placement', link: '/examples/voice-over-placement' },
+          { text: 'Voice Over Customizing', link: '/examples/voice-over-customizing' },
+          { text: 'Event Hooks', link: '/examples/event-hooks' },
         ]
       }
     ],

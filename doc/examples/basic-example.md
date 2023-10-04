@@ -1,8 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import { StagePlaySpotlight } from '../src/components/StagePlaySpotlight.ts'
-import { StagePlayScene } from '../src/components/StagePlayScene.ts'
-import { useStagePlay } from "../src/composables/act.ts"
+import { StagePlaySpotlight, StagePlayScene, useStagePlay } from '../../src/index.ts'
 
 const { action } = useStagePlay()
 
