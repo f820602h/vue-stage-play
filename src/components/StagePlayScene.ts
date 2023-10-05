@@ -1,5 +1,5 @@
 /* eslint-disable vue/require-default-prop */
-import type { PropType, StyleValue, SlotsType } from "vue";
+import type { PropType, SlotsType } from "vue";
 import {
   h,
   defineComponent,
@@ -22,6 +22,7 @@ import { useAct } from "../composables/act";
 import { useBodyScrollFixed } from "../composables/bodyScrollFixed";
 import { useFadeTransition } from "../composables/fade";
 import { useWindowSize, useElementBounding } from "@vueuse/core";
+import { smoothScroll, getPlacementStyle } from "../utils";
 
 export const StagePlayScene = defineComponent({
   slots: Object as SlotsType<{
@@ -144,6 +145,7 @@ export const StagePlayScene = defineComponent({
     const spotlight = ref<HTMLElement | null>(null);
     const voiceOver = ref<HTMLElement | null>(null);
 
+    const { fixed, reset } = useBodyScrollFixed();
     const { enterTransition, leaveTransition } = useFadeTransition(250);
 
     const globalOptions = inject(InjectionGlobalOptions, {});
@@ -184,6 +186,7 @@ export const StagePlayScene = defineComponent({
       currentActSceneList,
       currentScene,
       currentSceneOrder,
+      currentActor,
       hasPrevScene,
       hasNextScene,
       totalSceneCount,
@@ -204,11 +207,24 @@ export const StagePlayScene = defineComponent({
       );
     });
 
+    function action(actName?: string, scene?: number): void {
+      _action(actName || options.value.actName, scene);
+    }
+
+    async function cut(): Promise<void> {
+      await options.value.onBeforeCut(scopedProps);
+      _cut();
+      await options.value.onAfterCut(scopedProps);
+    }
+
     const scopedProps: ScopedProps = reactive({
+      actName: options.value.actName,
+      scene: options.value.scene,
       currentActName,
       currentActSceneList,
       currentScene,
       currentSceneOrder,
+      currentActor,
       hasPrevScene,
       hasNextScene,
       totalSceneCount,
@@ -220,30 +236,23 @@ export const StagePlayScene = defineComponent({
       jumpToScene,
     });
 
-    function action(actName?: string, scene?: number): void {
-      _action(actName || options.value.actName, scene);
-    }
-
-    async function cut(): Promise<void> {
-      await options.value.onBeforeCut(scopedProps);
-      _cut();
-      await options.value.onAfterCut(scopedProps);
-    }
-
     const {
       top: spotlightTop,
       bottom: spotlightBottom,
       left: spotlightLeft,
       right: spotlightRight,
     } = useElementBounding(spotlight);
-
     const { width: voWidth, height: voHeight } = useElementBounding(voiceOver);
-
     const { width: windowWidth, height: windowHeight } = useWindowSize();
 
-    const autoVoiceOverPlacement = computed<string>(() => {
-      if (!options.value.voiceOverAutoPlacement)
+    const voiceOverPlacement = computed<string>(() => {
+      if (slots.default === undefined) {
+        return "center";
+      }
+
+      if (!options.value.voiceOverAutoPlacement) {
         return options.value.voiceOverPlacement;
+      }
 
       let possiblePositions: string[] = [];
       switch (options.value.voiceOverPlacement) {
@@ -303,34 +312,6 @@ export const StagePlayScene = defineComponent({
       return possiblePositions[0] || options.value.voiceOverPlacement;
     });
 
-    const { fixed, reset } = useBodyScrollFixed();
-
-    function smoothScroll(el: HTMLElement): Promise<void> {
-      return new Promise((resolve) => {
-        let same = 0;
-        let lastPos: number;
-
-        el.scrollIntoView(
-          options.value.cameraFollowOptions as ScrollIntoViewOptions,
-        );
-        requestAnimationFrame(check);
-
-        function check() {
-          const newPos = el.getBoundingClientRect().top;
-          if (newPos === lastPos) {
-            if (same++ > 2) {
-              return resolve();
-            }
-          } else {
-            same = 0;
-            lastPos = newPos;
-          }
-
-          requestAnimationFrame(check);
-        }
-      });
-    }
-
     watch(
       () => ({
         actName: options.value.actName,
@@ -363,7 +344,10 @@ export const StagePlayScene = defineComponent({
           options.value.cameraFollow &&
           spotlight.value
         ) {
-          await smoothScroll(spotlight.value);
+          await smoothScroll(
+            spotlight.value,
+            options.value.cameraFollowOptions,
+          );
           if (options.value.cameraFixAfterFollow) fixed();
         }
       }
@@ -372,122 +356,6 @@ export const StagePlayScene = defineComponent({
     onBeforeUnmount(() => {
       if (isCurrentScene.value) cut();
       removeScene(options.value.actName, options.value.scene);
-    });
-
-    const voiceOverStyle = computed<StyleValue>(() => {
-      let top = "",
-        bottom = "",
-        left = "",
-        right = "",
-        transform = "";
-      switch (autoVoiceOverPlacement.value) {
-        case "top":
-          {
-            top = "0";
-            left = "0";
-            transform = "translate(0, -100%)";
-
-            switch (options.value.voiceOverAlign) {
-              case "start":
-                left = "0";
-                break;
-              case "center":
-                left = "50%";
-                transform = "translate(-50%, -100%)";
-                break;
-              case "end":
-                left = "unset";
-                right = "0";
-                break;
-              default:
-                break;
-            }
-          }
-          break;
-        case "bottom":
-          {
-            bottom = "0";
-            left = "0";
-            transform = "translate(0, 100%)";
-
-            switch (options.value.voiceOverAlign) {
-              case "start":
-                left = "0";
-                break;
-              case "center":
-                left = "50%";
-                transform = "translate(-50%, 100%)";
-                break;
-              case "end":
-                left = "unset";
-                right = "0";
-                break;
-              default:
-                break;
-            }
-          }
-          break;
-        case "left":
-          {
-            top = "0";
-            left = "0";
-            transform = "translate(-100%, 0)";
-
-            switch (options.value.voiceOverAlign) {
-              case "start":
-                top = "0";
-                break;
-              case "center":
-                top = "50%";
-                transform = "translate(-100%, -50%)";
-                break;
-              case "end":
-                top = "unset";
-                bottom = "0";
-                break;
-              default:
-                break;
-            }
-          }
-          break;
-        case "right":
-          {
-            top = "0";
-            right = "0";
-            transform = "translate(100%, 0)";
-
-            switch (options.value.voiceOverAlign) {
-              case "start":
-                top = "0";
-                break;
-              case "center":
-                top = "50%";
-                transform = "translate(100%, -50%)";
-                break;
-              case "end":
-                top = "unset";
-                bottom = "0";
-                break;
-              default:
-                break;
-            }
-          }
-          break;
-        default:
-          break;
-      }
-
-      return {
-        position: "absolute",
-        zIndex: "99996",
-        color: "#292929",
-        pointerEvents: "auto",
-        top,
-        bottom,
-        left,
-        right,
-        transform,
-      };
     });
 
     const isIconHover = ref(false);
@@ -501,8 +369,11 @@ export const StagePlayScene = defineComponent({
         {
           class: "vue-stage-play__scene",
           style: {
-            position: "relative",
+            position: slots.default ? "relative" : "fixed",
+            top: slots.default ? undefined : "50%",
+            left: slots.default ? undefined : "50%",
             zIndex: isCurrentScene.value ? "99998" : "",
+            transform: slots.default ? undefined : "translate(-50%, -50%)",
           },
         },
         [
@@ -516,10 +387,18 @@ export const StagePlayScene = defineComponent({
               style: {
                 position: "absolute",
                 scrollMargin: `${options.value.cameraFollowOffset}px`,
-                top: `-${options.value.spotlightPadding || 0}px`,
-                bottom: `-${options.value.spotlightPadding || 0}px`,
-                left: `-${options.value.spotlightPadding || 0}px`,
-                right: `-${options.value.spotlightPadding || 0}px`,
+                top: slots.default
+                  ? `-${options.value.spotlightPadding || 0}px`
+                  : "-1px",
+                bottom: slots.default
+                  ? `-${options.value.spotlightPadding || 0}px`
+                  : "-1px",
+                left: slots.default
+                  ? `-${options.value.spotlightPadding || 0}px`
+                  : "-1px",
+                right: slots.default
+                  ? `-${options.value.spotlightPadding || 0}px`
+                  : "-1px",
                 pointerEvents:
                   isCurrentScene.value && !options.value.allowInteract
                     ? undefined
@@ -540,7 +419,16 @@ export const StagePlayScene = defineComponent({
                         "div",
                         {
                           class: "vue-stage-play__voice-over",
-                          style: voiceOverStyle.value,
+                          style: {
+                            position: "absolute",
+                            zIndex: "99996",
+                            color: "#292929",
+                            pointerEvents: "auto",
+                            ...getPlacementStyle(
+                              voiceOverPlacement.value,
+                              options.value.voiceOverAlign,
+                            ),
+                          },
                           ref: voiceOver,
                         },
                         [
@@ -586,6 +474,7 @@ export const StagePlayScene = defineComponent({
                                             overflow: "hidden",
                                             textOverflow: "ellipsis",
                                             whiteSpace: "nowrap",
+                                            lineHeight: "1.5",
                                           },
                                         },
                                         options.value.voiceOverTitle,

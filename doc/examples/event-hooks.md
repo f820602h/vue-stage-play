@@ -60,7 +60,7 @@ function deactivated({ currentActName, currentScene}) {
     <button @click="action('event')">Start</button>
 
     <StagePlayScene 
-      :actName="'event'"
+      :act-name="'event'"
       :scene="1"
       :voice-over-title="'Step1'"
       :voice-over-content="'Open the door of the refrigerator.'"
@@ -84,19 +84,19 @@ function deactivated({ currentActName, currentScene}) {
 
 
 <StagePlaySpotlight>
-  <StagePlayScene :actName="'event'" :scene="1" :voice-over-title="'Step1'" :voice-over-content="'Open the door of the refrigerator.'" :on-before-cut="beforeCut" :on-after-cut="afterCut" :on-activated="activated" :on-deactivated="deactivated" >
+  <StagePlayScene :act-name="'event'" :scene="1" :voice-over-title="'Step1'" :voice-over-content="'Open the door of the refrigerator.'" :on-before-cut="beforeCut" :on-after-cut="afterCut" :on-activated="activated" :on-deactivated="deactivated" >
 
   ### Step1
 
   </StagePlayScene>
 
-  <StagePlayScene :actName="'event'" :scene="2" :voice-over-title="'Step2'" :voice-over-content="'Place the elephant inside the refrigerator.'" :on-before-cut="beforeCut" :on-after-cut="afterCut" :on-activated="activated" :on-deactivated="deactivated" >
+  <StagePlayScene :act-name="'event'" :scene="2" :voice-over-title="'Step2'" :voice-over-content="'Place the elephant inside the refrigerator.'" :on-before-cut="beforeCut" :on-after-cut="afterCut" :on-activated="activated" :on-deactivated="deactivated" >
 
   ### Step2
 
   </StagePlayScene>
 
-  <StagePlayScene :actName="'event'" :scene="3" :voice-over-title="'Step3'" :voice-over-content="'Close the door of the refrigerator.'" :on-before-cut="beforeCut" :on-after-cut="afterCut" :on-activated="activated" :on-deactivated="deactivated" >
+  <StagePlayScene :act-name="'event'" :scene="3" :voice-over-title="'Step3'" :voice-over-content="'Close the door of the refrigerator.'" :on-before-cut="beforeCut" :on-after-cut="afterCut" :on-activated="activated" :on-deactivated="deactivated" >
 
   ### Step3
 

@@ -93,9 +93,6 @@ describe("StagePlayScene before action", () => {
     expect(wrapper.attributes("style")).toBe("position: relative;");
 
     expect(defaultSlotsWrapper.exists()).toBe(true);
-    expect(defaultSlotsWrapper.attributes("style")).toBe(
-      "pointer-events: auto;",
-    );
 
     expect(spotlightWrapper.exists()).toBe(true);
     expect(spotlightWrapper.attributes("id")).toBe(
@@ -138,9 +135,6 @@ describe("StagePlayScene before action", () => {
     expect(wrapper.attributes("style")).toBe("position: relative;");
 
     expect(defaultSlotsWrapper.exists()).toBe(true);
-    expect(defaultSlotsWrapper.attributes("style")).toBe(
-      "pointer-events: auto;",
-    );
 
     expect(spotlightWrapper.exists()).toBe(true);
     expect(spotlightWrapper.attributes("id")).toBe(
@@ -187,9 +181,6 @@ describe("StagePlayScene before action", () => {
     expect(wrapper.attributes("style")).toBe("position: relative;");
 
     expect(defaultSlotsWrapper.exists()).toBe(true);
-    expect(defaultSlotsWrapper.attributes("style")).toBe(
-      "pointer-events: auto;",
-    );
 
     expect(spotlightWrapper.exists()).toBe(true);
     expect(spotlightWrapper.attributes("id")).toBe(
@@ -255,9 +246,6 @@ describe("StagePlayScene after action", () => {
     const clickMaskWrapper = wrapper.find(".vue-stage-play__click-mask");
 
     expect(defaultSlotsWrapper.exists()).toBe(true);
-    expect(defaultSlotsWrapper.attributes("style")).toBe(
-      "pointer-events: none;",
-    );
 
     expect(spotlightWrapper.exists()).toBe(true);
     expect(spotlightWrapper.attributes("id")).toBe(
@@ -266,7 +254,7 @@ describe("StagePlayScene after action", () => {
       )}`,
     );
     expect(spotlightWrapper.attributes("style")).toBe(
-      `position: absolute; scroll-margin: ${defaultOptions.cameraFollowOffset}px; top: -${defaultOptions.spotlightPadding}px; bottom: -${defaultOptions.spotlightPadding}px; left: -${defaultOptions.spotlightPadding}px; right: -${defaultOptions.spotlightPadding}px; pointer-events: none;`,
+      `position: absolute; scroll-margin: ${defaultOptions.cameraFollowOffset}px; top: -${defaultOptions.spotlightPadding}px; bottom: -${defaultOptions.spotlightPadding}px; left: -${defaultOptions.spotlightPadding}px; right: -${defaultOptions.spotlightPadding}px;`,
     );
 
     expect(voiceOverWrapper.exists()).toBe(true);
@@ -327,9 +315,6 @@ describe("StagePlayScene after action", () => {
     const clickMaskWrapper = wrapper.find(".vue-stage-play__click-mask");
 
     expect(defaultSlotsWrapper.exists()).toBe(true);
-    expect(defaultSlotsWrapper.attributes("style")).toBe(
-      "pointer-events: none;",
-    );
 
     expect(spotlightWrapper.exists()).toBe(true);
     expect(spotlightWrapper.attributes("id")).toBe(
@@ -338,7 +323,7 @@ describe("StagePlayScene after action", () => {
       )}`,
     );
     expect(spotlightWrapper.attributes("style")).toBe(
-      `position: absolute; scroll-margin: ${mockGlobalOptions.cameraFollowOffset}px; top: -${mockGlobalOptions.spotlightPadding}px; bottom: -${mockGlobalOptions.spotlightPadding}px; left: -${mockGlobalOptions.spotlightPadding}px; right: -${mockGlobalOptions.spotlightPadding}px; pointer-events: none;`,
+      `position: absolute; scroll-margin: ${mockGlobalOptions.cameraFollowOffset}px; top: -${mockGlobalOptions.spotlightPadding}px; bottom: -${mockGlobalOptions.spotlightPadding}px; left: -${mockGlobalOptions.spotlightPadding}px; right: -${mockGlobalOptions.spotlightPadding}px;`,
     );
 
     expect(voiceOverWrapper.exists()).toBe(true);
@@ -411,9 +396,6 @@ describe("StagePlayScene after action", () => {
     const clickMaskWrapper = wrapper.find(".vue-stage-play__click-mask");
 
     expect(defaultSlotsWrapper.exists()).toBe(true);
-    expect(defaultSlotsWrapper.attributes("style")).toBe(
-      "pointer-events: none;",
-    );
 
     expect(spotlightWrapper.exists()).toBe(true);
     expect(spotlightWrapper.attributes("id")).toBe(
@@ -428,7 +410,7 @@ describe("StagePlayScene after action", () => {
         mockGlobalOptions.spotlightPadding
       }px; left: -${mockGlobalOptions.spotlightPadding}px; right: -${
         mockGlobalOptions.spotlightPadding
-      }px; pointer-events: none;`,
+      }px;`,
     );
 
     expect(voiceOverWrapper.exists()).toBe(true);
@@ -580,6 +562,7 @@ describe("StagePlayScene after action", () => {
 
     const doneButtonWrapper = wrapper.find(".default__voice-over__footer__btn");
     doneButtonWrapper.trigger("click");
+    await nextTick();
     expect(currentActName.value).toBeUndefined();
     expect(currentScene.value).toBeUndefined();
 
@@ -616,6 +599,7 @@ describe("StagePlayScene after action", () => {
 
     const clickMaskWrapper = wrapper.find(".vue-stage-play__click-mask");
     clickMaskWrapper.trigger("click");
+    await nextTick();
     expect(currentActName.value).toBeUndefined();
     expect(currentScene.value).toBeUndefined();
 

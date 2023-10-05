@@ -1,12 +1,7 @@
 <script setup>
-import { ref } from 'vue'
 import { StagePlaySpotlight, StagePlayScene, useStagePlay } from '../../src/index.ts'
 
 const { action } = useStagePlay()
-
-const placement = ref("top")
-const align = ref("start")
-
 </script>
 
 # Voice Over Customizing
@@ -72,7 +67,6 @@ This example demonstrates the utilization of a customized tooltip.
 
 ```vue [App.vue]
 <script setup>
-import { ref } from 'vue'
 import MyVoiceOver from "./components/MyVoiceOver"
 import { StagePlaySpotlight, StagePlayScene, useStagePlay } from 'vue-stage-play'
 
@@ -84,7 +78,7 @@ const { action } = useStagePlay()
     <h2>How to place an giraffe into a refrigerator?</h2>
     <button @click="action('basic')">Start</button>
 
-    <StagePlayScene :actName="'voiceOverCustomizing'" :scene="1">
+    <StagePlayScene :act-name="'voiceOverCustomizing'" :scene="1">
       <h3>Step1</h3>
 
       <template #voiceOver="scopedProps">
@@ -100,7 +94,7 @@ const { action } = useStagePlay()
       </template>
     </StagePlayScene>
 
-    <StagePlayScene :actName="'voiceOverCustomizing'" :scene="2">
+    <StagePlayScene :act-name="'voiceOverCustomizing'" :scene="2">
       <h3>Step2</h3>
 
       <template #voiceOver="scopedProps">
@@ -116,7 +110,7 @@ const { action } = useStagePlay()
       </template>
     </StagePlayScene>
 
-    <StagePlayScene :actName="'voiceOverCustomizing'" :scene="3">
+    <StagePlayScene :act-name="'voiceOverCustomizing'" :scene="3">
       <h3>Step3</h3>
 
       <template #voiceOver="scopedProps">
@@ -132,13 +126,27 @@ const { action } = useStagePlay()
       </template>
     </StagePlayScene>
 
-    <StagePlayScene :actName="'voiceOverCustomizing'" :scene="4">
+    <StagePlayScene :act-name="'voiceOverCustomizing'" :scene="4">
       <h3>Step4</h3>
 
       <template #voiceOver="scopedProps">
         <MyVoiceOver
           :title="'Step4'"
           :content="'Close the door of the refrigerator.'"
+          :has-prev-scene="scopedProps.hasPrevScene"
+          :has-next-scene="scopedProps.hasNextScene"
+          @prev="scopedProps.prevScene()"
+          @next="scopedProps.nextScene()"
+          @done="scopedProps.cut()"
+        />
+      </template>
+    </StagePlayScene>
+
+    <StagePlayScene :act-name="'voiceOverCustomizing'" :scene="5">
+       <template #voiceOver="scopedProps">
+        <MyVoiceOver
+          :title="'Success!'"
+          :content="'You place an giraffe into a refrigerator.'"
           :has-prev-scene="scopedProps.hasPrevScene"
           :has-next-scene="scopedProps.hasNextScene"
           @prev="scopedProps.prevScene()"
@@ -158,7 +166,7 @@ const { action } = useStagePlay()
 <button class="btn" style="background: #34495e; color: white; border-radius: 4px; padding: 2px 12px" @click="action('voiceOverCustomizing')">Start</button>
 
 <StagePlaySpotlight>
-  <StagePlayScene :actName="'voiceOverCustomizing'" :scene="1" >
+  <StagePlayScene :act-name="'voiceOverCustomizing'" :scene="1" >
 
   ### Step1
 
@@ -194,7 +202,7 @@ const { action } = useStagePlay()
   </template>
   </StagePlayScene>
 
-  <StagePlayScene :actName="'voiceOverCustomizing'" :scene="2" >
+  <StagePlayScene :act-name="'voiceOverCustomizing'" :scene="2" >
 
   ### Step2
 
@@ -230,7 +238,7 @@ const { action } = useStagePlay()
   </template>
   </StagePlayScene>
 
-  <StagePlayScene :actName="'voiceOverCustomizing'" :scene="3" >
+  <StagePlayScene :act-name="'voiceOverCustomizing'" :scene="3" >
 
   ### Step3
 
@@ -266,7 +274,7 @@ const { action } = useStagePlay()
   </template>
   </StagePlayScene>
 
-  <StagePlayScene :actName="'voiceOverCustomizing'" :scene="4" >
+  <StagePlayScene :act-name="'voiceOverCustomizing'" :scene="4" >
 
   ### Step4
 
@@ -282,6 +290,39 @@ const { action } = useStagePlay()
       <div class="content">
         <h3 class="title">Step4</h3>
         <p>Close the door of the refrigerator.</p>
+      </div>
+      <button
+        v-show="scopedProps.hasNextScene"
+        class="btn"
+        :disabled="!scopedProps.hasNextScene"
+        @click="scopedProps.nextScene()"
+      >
+        →
+      </button>
+      <button
+        v-show="!scopedProps.hasNextScene"
+        class="btn"
+        @click="scopedProps.cut()"
+      >
+        X
+      </button>
+    </div>
+  </template>
+  </StagePlayScene>
+
+  <StagePlayScene :act-name="'voiceOverCustomizing'" :scene="5">
+  <template #voiceOver="scopedProps">
+     <div class="demo-card">
+      <button
+        class="btn"
+        :disabled="!scopedProps.hasPrevScene"
+        @click="scopedProps.prevScene()"
+      >
+        ←
+      </button>
+      <div class="content">
+        <h3 class="title">Success!</h3>
+        <p>You place an giraffe into a refrigerator.</p>
       </div>
       <button
         v-show="scopedProps.hasNextScene"

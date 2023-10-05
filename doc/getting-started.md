@@ -1,10 +1,5 @@
 <script setup>
-import { ref } from 'vue'
-import { StagePlaySpotlight } from '../src/components/StagePlaySpotlight.ts'
-import { StagePlayScene } from '../src/components/StagePlayScene.ts'
-
-const actName = ref("demo");
-
+import { StagePlaySpotlight, StagePlayScene } from "../src/index.ts";
 </script>
 
 
@@ -52,13 +47,13 @@ Next, import `<StagePlayScene>` where you want to highlight elements and wrap th
 
 Set the `actName` and `scene` for `<StagePlayScene>`, and call the `action` function from the slot props.
 
-``` vue{2,6,14,18}
+``` vue{2,6,14,18,20-25}
 <script setup lang="ts">
 import { StagePlayScene } from 'vue-stage-play'
 </script>
 
 <template>
-  <StagePlayScene actName="liveDemo" :scene="1">
+  <StagePlayScene :act-name="'liveDemo'" :scene="1">
     <template #default="slotProp">
       <div class="title">
         <!-- ... -->
@@ -71,15 +66,24 @@ import { StagePlayScene } from 'vue-stage-play'
       </button>
     </template>
   </StagePlayScene>
+
+  <StagePlayScene
+    :act-name="'liveDemo'"
+    :scene="2"
+    :voice-over-title="'Only Vice Over'"
+    :voice-over-content="'You have the option not to highlight any elements.'"
+  />
 </template>
 ```
 
-<StagePlayScene :actName="actName" :scene="1">
+<StagePlayScene :act-name="'demo'" :scene="1">
 <template #default="slotProp">
 
 <button class="btn" style="background: #34495e; color: white; border-radius: 4px; padding: 2px 12px" @click="slotProp.action()">Live Demo</button>
 
 </template>
 </StagePlayScene>
+
+<StagePlayScene :act-name="'demo'" :scene="2" :voice-over-title="'Only Vice Over'" :voice-over-content="'You have the option not to highlight any elements.'" />
 
 </StagePlaySpotlight>

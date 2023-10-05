@@ -30,7 +30,7 @@ const align = ref("start")
     <button @click="action('voiceOverPlacement')">Start</button>
 
     <StagePlayScene 
-      :actName="'voiceOverPlacement'"
+      :act-name="'voiceOverPlacement'"
       :scene="1"
       :allow-interact="true"
       :voice-over-auto-placement="false"
@@ -62,7 +62,7 @@ const align = ref("start")
 
 
 <StagePlaySpotlight>
-  <StagePlayScene :actName="'voiceOverPlacement'" :scene="1" :allow-interact="true" :voice-over-auto-placement="false" :voice-over-placement="placement" :voice-over-align="align" >
+  <StagePlayScene :act-name="'voiceOverPlacement'" :scene="1" :allow-interact="true" :voice-over-auto-placement="false" :voice-over-placement="placement" :voice-over-align="align" >
 
   <div style="display: flex; align-items: center; gap: 12px;">
     <p>Placement:</p>

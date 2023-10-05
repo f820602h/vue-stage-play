@@ -1,9 +1,7 @@
 <script setup>
-import { ref } from 'vue'
 import { StagePlaySpotlight, StagePlayScene, useStagePlay } from '../../src/index.ts'
 
 const { action } = useStagePlay()
-
 </script>
 
 # Basic Example
@@ -12,7 +10,6 @@ This example demonstrates a guided tour, covering 「Activation with useStagePla
 
 ```vue
 <script setup>
-import { ref } from 'vue'
 import { StagePlaySpotlight, StagePlayScene, useStagePlay } from 'vue-stage-play'
 
 const { action } = useStagePlay()
@@ -24,7 +21,7 @@ const { action } = useStagePlay()
     <button @click="action('basic')">Start</button>
 
     <StagePlayScene 
-      :actName="'basic'"
+      :act-name="'basic'"
       :scene="1"
       :voice-over-title="'Step1'"
       :voice-over-content="'Open the door of the refrigerator.'" 
@@ -33,7 +30,7 @@ const { action } = useStagePlay()
     </StagePlayScene>
 
     <StagePlayScene 
-      :actName="'basic'"
+      :act-name="'basic'"
       :scene="2"
       :voice-over-title="'Step2'"
       :voice-over-content="'Place the elephant inside the refrigerator.'" 
@@ -42,13 +39,20 @@ const { action } = useStagePlay()
     </StagePlayScene>
 
     <StagePlayScene 
-      :actName="'basic'"
+      :act-name="'basic'"
       :scene="3"
       :voice-over-title="'Step3'"
       :voice-over-content="'Close the door of the refrigerator.'" 
     >
       <h3>Step3</h3>
     </StagePlayScene>
+
+    <StagePlayScene
+      :act-name="'basic'"
+      :scene="4"
+      :voice-over-title="'Success!'"
+      :voice-over-content="'You place an elephant into a refrigerator.'"
+    />
   </StagePlaySpotlight>
 </template>
 ```
@@ -59,21 +63,23 @@ const { action } = useStagePlay()
 
 
 <StagePlaySpotlight>
-  <StagePlayScene :actName="'basic'" :scene="1" :voice-over-title="'Step1'" :voice-over-content="'Open the door of the refrigerator.'" >
+  <StagePlayScene :act-name="'basic'" :scene="1" :voice-over-title="'Step1'" :voice-over-content="'Open the door of the refrigerator.'" >
 
   ### Step1
 
   </StagePlayScene>
 
-  <StagePlayScene :actName="'basic'" :scene="2" :voice-over-title="'Step2'" :voice-over-content="'Place the elephant inside the refrigerator.'" >
+  <StagePlayScene :act-name="'basic'" :scene="2" :voice-over-title="'Step2'" :voice-over-content="'Place the elephant inside the refrigerator.'" >
 
   ### Step2
 
   </StagePlayScene>
 
-  <StagePlayScene :actName="'basic'" :scene="3" :voice-over-title="'Step3'" :voice-over-content="'Close the door of the refrigerator.'" >
+  <StagePlayScene :act-name="'basic'" :scene="3" :voice-over-title="'Step3'" :voice-over-content="'Close the door of the refrigerator.'" >
 
   ### Step3
 
   </StagePlayScene>
+
+  <StagePlayScene :act-name="'basic'" :scene="4" :voice-over-title="'Success!'" :voice-over-content="'You place an elephant into a refrigerator.'" />
 </StagePlaySpotlight>

@@ -69,7 +69,7 @@ import { StagePlayScene } from 'vue-stage-play'
 </script>
 
 <template>
-  <StagePlayScene actName="liveDemo" :scene="1">
+  <StagePlayScene :act-name="'liveDemo'" :scene="1">
     <template #default="slotProp">
       <div class="title">
         <!-- ... -->

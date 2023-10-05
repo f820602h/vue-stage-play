@@ -8,7 +8,7 @@ import { StagePlayScene } from 'vue-stage-play'
 </script>
 
 <template>
-  <StagePlayScene actName="demo" :scene="1">
+  <StagePlayScene :act-name="'demo'" :scene="1">
     <template #default>
       <div class="title">
         <!-- ... -->
@@ -24,6 +24,26 @@ import { StagePlayScene } from 'vue-stage-play'
 :::tip
 `<StagePlayScene>` will render an actual element. Hence, you may need to set some style to it, rather than the highlighted elements. For example, `margin`, `position`, and so forth.
 :::
+
+
+If necessary, you can choose not to highlight any elements. In this case, the voice-over will automatically be centered, becoming a standalone dialogue box.
+
+``` vue{2,6-11}
+<script setup lang="ts">
+import { StagePlayScene } from 'vue-stage-play'
+</script>
+
+<template>
+  <StagePlayScene
+    :act-name="'demo'"
+    :scene="2"
+    :voice-title="'Only Vice Over'"
+    :voice-content="'You have the option not to highlight any elements.'"
+  />
+</template>
+```
+
+
 
 ## Props
 
@@ -155,7 +175,7 @@ In all the slots described below, you can access slot props. ([see detail](#scop
 
 ``` vue{3,6}
 <template>
-  <StagePlayScene actName="guide" :scene="1">
+  <StagePlayScene :act-name="'guide'" :scene="1">
     <template #default="scopedProps">
         <!-- ... -->
     </template>
@@ -198,11 +218,14 @@ Slot for replacing the tooltip buttons.
 
 | Property            | Type                                         |
 | ------------------- | -------------------------------------------- |
+| actName             | `string`                                     |
+| scene               | `number`                                     |
 | currentActName      | `string \| undefined`                        |
 | currentActSceneList | `number[]`                                   |
 | totalSceneCount     | `number`                                     |
 | currentScene        | `number \| undefined`                        |
 | currentSceneOrder   | `number`                                     |
+| currentActor        | `HTMLElement \| null \| undefined`           |
 | hasPrevScene        | `boolean`                                    |
 | hasNextScene        | `boolean`                                    |
 | isCurrentScene      | `boolean`                                    |
@@ -211,6 +234,14 @@ Slot for replacing the tooltip buttons.
 | prevScene           | `() => void`                                 |
 | nextScene           | `() => void`                                 |
 | jumpToScene         | `(scene: number) => void`                    |
+
+### `actName`
+
+The actName prop of this `<StagePlayScene>`.
+
+### `scene`
+
+The scene prop of this `<StagePlayScene>`.
 
 ### `currentActName`
 
@@ -231,6 +262,10 @@ The number of the scene currently in progress.
 ### `currentSceneOrder`
 
 The order of the scene currently in progress.
+
+### `currentActor`
+
+The template ref of highlighting `<StagePlayScene>`.
 
 ### `isCurrentScene`
 
