@@ -369,10 +369,18 @@ export const StagePlayScene = defineComponent({
         {
           class: "vue-stage-play__scene",
           style: {
-            position: slots.default ? "relative" : "fixed",
+            position: slots.default
+              ? isCurrentScene.value
+                ? "relative"
+                : undefined
+              : "fixed",
             top: slots.default ? undefined : "50%",
             left: slots.default ? undefined : "50%",
-            zIndex: isCurrentScene.value ? "99998" : "",
+            zIndex: slots.default
+              ? isCurrentScene.value
+                ? "99998"
+                : undefined
+              : "99998",
             transform: slots.default ? undefined : "translate(-50%, -50%)",
           },
         },
