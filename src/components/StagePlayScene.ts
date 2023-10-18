@@ -146,7 +146,7 @@ export const StagePlayScene = defineComponent({
     const voiceOver = ref<HTMLElement | null>(null);
 
     const { fixed, reset } = useBodyScrollFixed();
-    const { enterTransition, leaveTransition } = useFadeTransition(250);
+    const { enterTransition } = useFadeTransition(250);
 
     const globalOptions = inject(InjectionGlobalOptions, {});
     const spotlightOptions = inject(InjectionSpotlightOptions);
@@ -419,7 +419,6 @@ export const StagePlayScene = defineComponent({
                 {
                   css: false,
                   onEnter: enterTransition,
-                  onLeave: leaveTransition,
                 },
                 () => [
                   isCurrentScene.value && !isFloat.value

@@ -6,22 +6,11 @@ const { action } = useStagePlay()
 
 const consoleText = ref("log....")
 
-function beforeCut({ currentActName, currentScene}) {
-  consoleText.value = `[Before Cut] Act: ${currentActName}; Scene: ${currentScene}\n` + consoleText.value;
+function eventHandler(hookName) {
+  return ({ currentActName, currentScene}) => {
+    consoleText.value = `[${hookName}] Act: ${currentActName}; Scene: ${currentScene}\n` + consoleText.value;
+  }
 }
-
-function afterCut({ currentActName, currentScene}) {
-  consoleText.value = `[After Cut] Act: ${currentActName}; Scene: ${currentScene}\n` + consoleText.value;
-}
-
-function activated({ currentActName, currentScene}) {
-  consoleText.value = `[Activated] Act: ${currentActName}; Scene: ${currentScene}\n` + consoleText.value;
-}
-
-function deactivated({ currentActName, currentScene}) {
-  consoleText.value = `[Deactivated] Act: ${currentActName}; Scene: ${currentScene}\n` + consoleText.value;
-}
-
 </script>
 
 # Event Hooks
@@ -36,21 +25,10 @@ import { StagePlaySpotlight, StagePlayScene, useStagePlay } from 'vue-stage-play
 const { action } = useStagePlay()
 const consoleText = ref("log....")
 
-function beforeCut({ currentActName, currentScene}) {
-  consoleText.value = 
-    `[Before Cut] Act: ${currentActName}; Scene: ${currentScene}\n` + consoleText.value;
-}
-function afterCut({ currentActName, currentScene}) {
-  consoleText.value = 
-    `[After Cut] Act: ${currentActName}; Scene: ${currentScene}\n` + consoleText.value;
-}
-function activated({ currentActName, currentScene}) {
-  consoleText.value = 
-    `[Activated] Act: ${currentActName}; Scene: ${currentScene}\n` + consoleText.value;
-}
-function deactivated({ currentActName, currentScene}) {
-  consoleText.value = 
-    `[Deactivated] Act: ${currentActName}; Scene: ${currentScene}\n` + consoleText.value;
+function eventHandler(hookName) {
+  return ({ currentActName, currentScene}) => {
+    consoleText.value = `[${hookName}] Act: ${currentActName}; Scene: ${currentScene}\n` + consoleText.value;
+  }
 }
 </script>
 
@@ -64,10 +42,10 @@ function deactivated({ currentActName, currentScene}) {
       :scene="1"
       :voice-over-title="'Step1'"
       :voice-over-content="'Open the door of the refrigerator.'"
-      :on-before-cut="beforeCut"
-      :on-after-cut="afterCut"
-      :on-activated="activated"
-      :on-deactivated="deactivated"
+      :on-before-cut="eventHandler('Before Cut')"
+      :on-after-cut="eventHandler('After Cut')"
+      :on-activated="eventHandler('Activated')"
+      :on-deactivated="eventHandler('Deactivated')"
     >
       <h3>Step1</h3>
     </StagePlayScene>
@@ -84,19 +62,19 @@ function deactivated({ currentActName, currentScene}) {
 
 
 <StagePlaySpotlight>
-  <StagePlayScene :act-name="'event'" :scene="1" :voice-over-title="'Step1'" :voice-over-content="'Open the door of the refrigerator.'" :on-before-cut="beforeCut" :on-after-cut="afterCut" :on-activated="activated" :on-deactivated="deactivated" >
+  <StagePlayScene :act-name="'event'" :scene="1" :voice-over-title="'Step1'" :voice-over-content="'Open the door of the refrigerator.'" :on-before-cut="eventHandler('Before Cut')" :on-after-cut="eventHandler('After Cut')" :on-activated="eventHandler('Activated')" :on-deactivated="eventHandler('Deactivated')" >
 
   ### Step1
 
   </StagePlayScene>
 
-  <StagePlayScene :act-name="'event'" :scene="2" :voice-over-title="'Step2'" :voice-over-content="'Place the elephant inside the refrigerator.'" :on-before-cut="beforeCut" :on-after-cut="afterCut" :on-activated="activated" :on-deactivated="deactivated" >
+  <StagePlayScene :act-name="'event'" :scene="2" :voice-over-title="'Step2'" :voice-over-content="'Place the elephant inside the refrigerator.'" :on-before-cut="eventHandler('Before Cut')" :on-after-cut="eventHandler('After Cut')" :on-activated="eventHandler('Activated')" :on-deactivated="eventHandler('Deactivated')" >
 
   ### Step2
 
   </StagePlayScene>
 
-  <StagePlayScene :act-name="'event'" :scene="3" :voice-over-title="'Step3'" :voice-over-content="'Close the door of the refrigerator.'" :on-before-cut="beforeCut" :on-after-cut="afterCut" :on-activated="activated" :on-deactivated="deactivated" >
+  <StagePlayScene :act-name="'event'" :scene="3" :voice-over-title="'Step3'" :voice-over-content="'Close the door of the refrigerator.'" :on-before-cut="eventHandler('Before Cut')" :on-after-cut="eventHandler('After Cut')" :on-activated="eventHandler('Activated')" :on-deactivated="eventHandler('Deactivated')" >
 
   ### Step3
 
