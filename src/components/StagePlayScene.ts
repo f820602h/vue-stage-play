@@ -181,7 +181,7 @@ export const StagePlayScene = defineComponent({
     );
 
     const {
-      isFloat,
+      isLocate,
       currentActName,
       currentActSceneList,
       currentScene,
@@ -335,7 +335,7 @@ export const StagePlayScene = defineComponent({
       else await options.value.onDeactivated(scopedProps);
     });
 
-    watch(isFloat, async (val) => {
+    watch(isLocate, async (val) => {
       reset();
       if (val) return;
       else {
@@ -421,7 +421,7 @@ export const StagePlayScene = defineComponent({
                   onEnter: enterTransition,
                 },
                 () => [
-                  isCurrentScene.value && !isFloat.value
+                  isCurrentScene.value && !isLocate.value
                     ? h(
                         "div",
                         {
@@ -681,7 +681,7 @@ export const StagePlayScene = defineComponent({
               ),
             ],
           ),
-          isCurrentScene.value && isFloat.value
+          isCurrentScene.value && isLocate.value
             ? h(Teleport, { to: "body" }, [
                 h(
                   "div",

@@ -149,7 +149,7 @@ function jumpToScene(scene: number): void {
   currentScene.value = scene;
 }
 
-const isFloat = ref<boolean>(true);
+const isLocate = ref<boolean>(true);
 
 export function useStagePlay() {
   return {
@@ -172,7 +172,7 @@ export function useStagePlay() {
 
 export function useAct() {
   return {
-    isFloat,
+    isLocate,
     acts,
     currentActName,
     currentActSceneList,

@@ -18,8 +18,9 @@ import {
 } from "../constants";
 import { defaultOptions } from "../options";
 import { useAct } from "../composables/act";
+import { useBodyScrollFixed } from "../composables/bodyScrollFixed";
 import { useFadeTransition } from "../composables/fade";
-import { isClient, useElementBounding } from "@vueuse/core";
+import { useElementBounding } from "@vueuse/core";
 
 export const StagePlaySpotlight = defineComponent({
   name: "StagePlaySpotlight",
@@ -38,8 +39,10 @@ export const StagePlaySpotlight = defineComponent({
     },
   },
   setup(props, { slots }) {
-    const { isFloat, currentActor } = useAct();
+    const { isLocate, currentActor } = useAct();
     const { enterTransition, leaveTransition } = useFadeTransition(600);
+
+    const { isFixed } = useBodyScrollFixed();
 
     const globalOptions = inject(InjectionGlobalOptions, {});
     const localOptions = ref<SpotlightProps>({});
@@ -68,26 +71,20 @@ export const StagePlaySpotlight = defineComponent({
     const { top, left, width, height } = useElementBounding(currentActor);
 
     watch(currentActor, () => {
-      isFloat.value = true;
+      isLocate.value = true;
     });
-
-    const root = isClient
-      ? document.documentElement || document.body
-      : undefined;
 
     const bulbStyle = computed<StyleValue>(() => {
       return {
         position: "absolute",
         zIndex: 99995,
 
-        top:
-          !isFloat.value && currentActor.value
-            ? "0px"
-            : `${top.value + (root?.scrollTop || 0)}px`,
-        left:
-          !isFloat.value && currentActor.value
-            ? "0px"
-            : `${left.value + (root?.scrollLeft || 0)}px`,
+        top: isFixed.value
+          ? `calc(-1 * ${document.body.style.top} + ${top.value}px)`
+          : `calc(${window.scrollY}px + ${top.value}px)`,
+        left: isFixed.value
+          ? `calc(-1 * ${document.body.style.left} + ${left.value}px)`
+          : `calc(${window.scrollX}px + ${left.value}px)`,
 
         width: width.value ? width.value + "px" : "100%",
         height: height.value ? height.value + "px" : "100%",
@@ -99,7 +96,7 @@ export const StagePlaySpotlight = defineComponent({
         }px`,
         boxShadow: `${options.value.spotlightDarkZoneColor} 0px 0px 0px 3000px`,
 
-        transition: "all 0.35s ease",
+        transition: !isLocate.value ? undefined : "all 0.35s ease",
         pointerEvents: "none",
       };
     });
@@ -109,7 +106,7 @@ export const StagePlaySpotlight = defineComponent({
         slots.default?.(),
         h(
           Teleport,
-          { to: (!isFloat.value && currentActor?.value) || "body" },
+          { to: "body" },
           h(
             Transition as any,
             {
@@ -123,7 +120,7 @@ export const StagePlaySpotlight = defineComponent({
                     class: "vue-stage-play__spotlight-bulb",
                     style: bulbStyle.value,
                     onTransitionend: () => {
-                      isFloat.value = false;
+                      isLocate.value = false;
                     },
                   })
                 : null,

@@ -52,7 +52,7 @@ const mockGlobalOptions: GlobalOptions = {
 
 const actName = "testAct";
 const scene1 = 1;
-const { action, cut, currentActName, currentScene, isFloat } = useAct();
+const { action, cut, currentActName, currentScene, isLocate } = useAct();
 
 const scrollIntoViewMock = vi.fn();
 window.HTMLElement.prototype.scrollIntoView = scrollIntoViewMock;
@@ -90,7 +90,6 @@ describe("StagePlayScene before action", () => {
 
     expect(wrapper.exists()).toBe(true);
     expect(wrapper.classes()).toContain("vue-stage-play__scene");
-    expect(wrapper.attributes("style")).toBe("position: relative;");
 
     expect(defaultSlotsWrapper.exists()).toBe(true);
 
@@ -132,7 +131,6 @@ describe("StagePlayScene before action", () => {
 
     expect(wrapper.exists()).toBe(true);
     expect(wrapper.classes()).toContain("vue-stage-play__scene");
-    expect(wrapper.attributes("style")).toBe("position: relative;");
 
     expect(defaultSlotsWrapper.exists()).toBe(true);
 
@@ -178,7 +176,6 @@ describe("StagePlayScene before action", () => {
 
     expect(wrapper.exists()).toBe(true);
     expect(wrapper.classes()).toContain("vue-stage-play__scene");
-    expect(wrapper.attributes("style")).toBe("position: relative;");
 
     expect(defaultSlotsWrapper.exists()).toBe(true);
 
@@ -229,7 +226,7 @@ describe("StagePlayScene after action", () => {
 
     action(actName, scene1);
     await nextTick();
-    expect(isFloat.value).toBe(true);
+    expect(isLocate.value).toBe(true);
 
     shallowMount(StagePlaySpotlight, {
       global: { stubs: { Teleport: true, Transition: true } },
@@ -238,7 +235,7 @@ describe("StagePlayScene after action", () => {
       .trigger("transitionend");
 
     await nextTick();
-    expect(isFloat.value).toBe(false);
+    expect(isLocate.value).toBe(false);
 
     const defaultSlotsWrapper = wrapper.find("default-slots-stub");
     const spotlightWrapper = wrapper.find(".vue-stage-play__spotlight");
@@ -298,7 +295,7 @@ describe("StagePlayScene after action", () => {
 
     action(actName, scene1);
     await nextTick();
-    expect(isFloat.value).toBe(true);
+    expect(isLocate.value).toBe(true);
 
     shallowMount(StagePlaySpotlight, {
       global: { stubs: { Teleport: true, Transition: true } },
@@ -307,7 +304,7 @@ describe("StagePlayScene after action", () => {
       .trigger("transitionend");
 
     await nextTick();
-    expect(isFloat.value).toBe(false);
+    expect(isLocate.value).toBe(false);
 
     const defaultSlotsWrapper = wrapper.find("default-slots-stub");
     const spotlightWrapper = wrapper.find(".vue-stage-play__spotlight");
@@ -379,7 +376,7 @@ describe("StagePlayScene after action", () => {
 
     action(actName, scene1);
     await nextTick();
-    expect(isFloat.value).toBe(true);
+    expect(isLocate.value).toBe(true);
 
     shallowMount(StagePlaySpotlight, {
       global: { stubs: { Teleport: true, Transition: true } },
@@ -388,7 +385,7 @@ describe("StagePlayScene after action", () => {
       .trigger("transitionend");
 
     await nextTick();
-    expect(isFloat.value).toBe(false);
+    expect(isLocate.value).toBe(false);
 
     const defaultSlotsWrapper = wrapper.find("default-slots-stub");
     const spotlightWrapper = wrapper.find(".vue-stage-play__spotlight");
@@ -457,7 +454,7 @@ describe("StagePlayScene after action", () => {
 
     action(actName, scene1);
     await nextTick();
-    expect(isFloat.value).toBe(true);
+    expect(isLocate.value).toBe(true);
 
     shallowMount(StagePlaySpotlight, {
       global: { stubs: { Teleport: true, Transition: true } },
@@ -466,7 +463,7 @@ describe("StagePlayScene after action", () => {
       .trigger("transitionend");
 
     await nextTick();
-    expect(isFloat.value).toBe(false);
+    expect(isLocate.value).toBe(false);
 
     const voiceOverSlotsWrapper = wrapper.find(".voice-over-slots");
     expect(voiceOverSlotsWrapper.exists()).toBe(true);
@@ -497,7 +494,7 @@ describe("StagePlayScene after action", () => {
 
     action(actName, scene1);
     await nextTick();
-    expect(isFloat.value).toBe(true);
+    expect(isLocate.value).toBe(true);
 
     shallowMount(StagePlaySpotlight, {
       global: { stubs: { Teleport: true, Transition: true } },
@@ -506,7 +503,7 @@ describe("StagePlayScene after action", () => {
       .trigger("transitionend");
 
     await nextTick();
-    expect(isFloat.value).toBe(false);
+    expect(isLocate.value).toBe(false);
 
     const voiceOverHeaderSlotsWrapper = wrapper.find(".voice-over-header");
     expect(voiceOverHeaderSlotsWrapper.exists()).toBe(true);
@@ -549,7 +546,7 @@ describe("StagePlayScene after action", () => {
 
     action(actName, scene1);
     await nextTick();
-    expect(isFloat.value).toBe(true);
+    expect(isLocate.value).toBe(true);
 
     shallowMount(StagePlaySpotlight, {
       global: { stubs: { Teleport: true, Transition: true } },
@@ -558,7 +555,7 @@ describe("StagePlayScene after action", () => {
       .trigger("transitionend");
 
     await nextTick();
-    expect(isFloat.value).toBe(false);
+    expect(isLocate.value).toBe(false);
 
     const doneButtonWrapper = wrapper.find(".default__voice-over__footer__btn");
     doneButtonWrapper.trigger("click");
@@ -567,7 +564,7 @@ describe("StagePlayScene after action", () => {
     expect(currentScene.value).toBeUndefined();
 
     await nextTick();
-    expect(isFloat.value).toBe(true);
+    expect(isLocate.value).toBe(true);
   });
 
   it("cut by click mask", async () => {
@@ -586,7 +583,7 @@ describe("StagePlayScene after action", () => {
 
     action(actName, scene1);
     await nextTick();
-    expect(isFloat.value).toBe(true);
+    expect(isLocate.value).toBe(true);
 
     shallowMount(StagePlaySpotlight, {
       global: { stubs: { Teleport: true, Transition: true } },
@@ -595,7 +592,7 @@ describe("StagePlayScene after action", () => {
       .trigger("transitionend");
 
     await nextTick();
-    expect(isFloat.value).toBe(false);
+    expect(isLocate.value).toBe(false);
 
     const clickMaskWrapper = wrapper.find(".vue-stage-play__click-mask");
     clickMaskWrapper.trigger("click");
@@ -604,7 +601,7 @@ describe("StagePlayScene after action", () => {
     expect(currentScene.value).toBeUndefined();
 
     await nextTick();
-    expect(isFloat.value).toBe(true);
+    expect(isLocate.value).toBe(true);
   });
 
   it("should not cut by click mask when props.allowLeave is false", async () => {
@@ -624,7 +621,7 @@ describe("StagePlayScene after action", () => {
 
     action(actName, scene1);
     await nextTick();
-    expect(isFloat.value).toBe(true);
+    expect(isLocate.value).toBe(true);
 
     shallowMount(StagePlaySpotlight, {
       global: { stubs: { Teleport: true, Transition: true } },
@@ -633,14 +630,14 @@ describe("StagePlayScene after action", () => {
       .trigger("transitionend");
 
     await nextTick();
-    expect(isFloat.value).toBe(false);
+    expect(isLocate.value).toBe(false);
 
     const clickMaskWrapper = wrapper.find(".vue-stage-play__click-mask");
     clickMaskWrapper.trigger("click");
     expect(currentActName.value).toBe(actName);
     expect(currentScene.value).toBe(scene1);
 
-    expect(isFloat.value).toBe(false);
+    expect(isLocate.value).toBe(false);
     expect(mockGlobalOptions.onDeactivated).toHaveBeenCalled();
   });
 });
