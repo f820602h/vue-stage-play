@@ -251,7 +251,7 @@ export const StagePlayScene = defineComponent({
     });
 
     const { floatingStyles } = useFloating(spotlight, voiceOver, {
-      placement: placement.value,
+      placement: placement,
       whileElementsMounted: autoUpdate,
       middleware: options.value.voiceOverAutoPlacement ? [shift(), flip()] : [],
     });
