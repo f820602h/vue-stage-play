@@ -15,7 +15,7 @@ export const defaultOptions: Required<GlobalOptions> = {
     block: "start",
     inline: "nearest",
   },
-  cameraFixAfterFollow: false,
+  cameraFixAfterFollow: true,
 
   voiceOverPlacement: "bottom",
   voiceOverAutoPlacement: true,
