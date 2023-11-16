@@ -21,8 +21,14 @@ import { defaultOptions } from "../options";
 import { useAct } from "../composables/act";
 import { useBodyScrollFixed } from "../composables/bodyScrollFixed";
 import { useFadeTransition } from "../composables/fade";
-import { useWindowSize, useElementBounding } from "@vueuse/core";
-import { smoothScroll, getPlacementStyle } from "../utils";
+import { smoothScroll } from "../utils";
+import {
+  useFloating,
+  autoUpdate,
+  shift,
+  flip,
+  Placement,
+} from "@floating-ui/vue";
 
 export const StagePlayScene = defineComponent({
   slots: Object as SlotsType<{
@@ -142,9 +148,6 @@ export const StagePlayScene = defineComponent({
     },
   },
   setup(props, { slots }) {
-    const spotlight = ref<HTMLElement | null>(null);
-    const voiceOver = ref<HTMLElement | null>(null);
-
     const { fixed, reset } = useBodyScrollFixed();
     const { enterTransition } = useFadeTransition(250);
 
@@ -236,80 +239,21 @@ export const StagePlayScene = defineComponent({
       jumpToScene,
     });
 
-    const {
-      top: spotlightTop,
-      bottom: spotlightBottom,
-      left: spotlightLeft,
-      right: spotlightRight,
-    } = useElementBounding(spotlight);
-    const { width: voWidth, height: voHeight } = useElementBounding(voiceOver);
-    const { width: windowWidth, height: windowHeight } = useWindowSize();
+    const spotlight = ref<HTMLElement | null>(null);
+    const voiceOver = ref<HTMLElement | null>(null);
 
-    const voiceOverPlacement = computed<string>(() => {
-      if (slots.default === undefined) {
-        return "center";
-      }
+    const placement = computed<Placement>(() => {
+      return (
+        slots.default === undefined
+          ? "top-center"
+          : `${options.value.voiceOverPlacement}-${options.value.voiceOverAlign}`
+      ) as Placement;
+    });
 
-      if (!options.value.voiceOverAutoPlacement) {
-        return options.value.voiceOverPlacement;
-      }
-
-      let possiblePositions: string[] = [];
-      switch (options.value.voiceOverPlacement) {
-        case "top":
-          possiblePositions = ["top", "bottom", "left", "right"];
-          break;
-        case "bottom":
-          possiblePositions = ["bottom", "top", "left", "right"];
-          break;
-        case "left":
-          possiblePositions = ["left", "top", "bottom", "right"];
-          break;
-        case "right":
-          possiblePositions = ["right", "top", "bottom", "left"];
-          break;
-      }
-
-      if (spotlightBottom.value + voHeight.value > windowHeight.value) {
-        possiblePositions = possiblePositions.filter(
-          (position) => position !== "bottom",
-        );
-      }
-
-      if (spotlightTop.value - voHeight.value < 0) {
-        possiblePositions = possiblePositions.filter(
-          (position) => position !== "top",
-        );
-      }
-
-      if (spotlightLeft.value - voWidth.value < 0) {
-        possiblePositions = possiblePositions.filter(
-          (position) => position !== "left",
-        );
-      }
-
-      if (spotlightRight.value + voWidth.value > windowWidth.value) {
-        possiblePositions = possiblePositions.filter(
-          (position) => position !== "right",
-        );
-      }
-
-      if (
-        spotlightTop.value < 0 ||
-        spotlightBottom.value > windowHeight.value
-      ) {
-        possiblePositions = possiblePositions.filter(
-          (position) => position !== "right" && position !== "left",
-        );
-      }
-
-      if (spotlightLeft.value < 0 || spotlightRight.value > windowWidth.value) {
-        possiblePositions = possiblePositions.filter(
-          (position) => position !== "top" && position !== "bottom",
-        );
-      }
-
-      return possiblePositions[0] || options.value.voiceOverPlacement;
+    const { floatingStyles } = useFloating(spotlight, voiceOver, {
+      placement: placement.value,
+      whileElementsMounted: autoUpdate,
+      middleware: options.value.voiceOverAutoPlacement ? [shift(), flip()] : [],
     });
 
     watch(
@@ -427,14 +371,14 @@ export const StagePlayScene = defineComponent({
                         {
                           class: "vue-stage-play__voice-over",
                           style: {
-                            position: "absolute",
                             zIndex: "99996",
                             color: "#292929",
                             pointerEvents: "auto",
-                            ...getPlacementStyle(
-                              voiceOverPlacement.value,
-                              options.value.voiceOverAlign,
-                            ),
+                            ...floatingStyles.value,
+                            transform:
+                              slots.default === undefined
+                                ? "translate(-50%, -50%)"
+                                : floatingStyles.value.transform,
                           },
                           ref: voiceOver,
                         },

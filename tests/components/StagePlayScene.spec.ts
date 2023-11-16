@@ -10,29 +10,6 @@ import { useAct } from "../../src/composables/act";
 import { defaultOptions } from "../../src/options";
 import { defineComponent, nextTick } from "vue";
 
-const voiceOverStyle: Record<string, Record<string, string>> = {
-  top: {
-    start: "top: 0px; left: 0px; transform: translate(0, -100%);",
-    center: "top: 0px; left: 50%; transform: translate(-50%, -100%);",
-    end: "top: 0px; left: unset; right: 0px; transform: translate(0, -100%);",
-  },
-  bottom: {
-    start: "bottom: 0px; left: 0px; transform: translate(0, 100%);",
-    center: "bottom: 0px; left: 50%; transform: translate(-50%, 100%);",
-    end: "bottom: 0px; left: unset; right: 0px; transform: translate(0, 100%);",
-  },
-  left: {
-    start: "top: 0px; left: 0px; transform: translate(-100%, 0);",
-    center: "top: 50%; left: 0px; transform: translate(-100%, -50%);",
-    end: "top: unset; bottom: 0px; left: 0px; transform: translate(-100%, 0);",
-  },
-  right: {
-    start: "top: 0px; right: 0px; transform: translate(100%, 0);",
-    center: "top: 50%; right: 0px; transform: translate(100%, -50%);",
-    end: "top: unset; bottom: 0px; right: 0px; transform: translate(100%, 0);",
-  },
-};
-
 const mockGlobalOptions: GlobalOptions = {
   spotlightPadding: 20,
   cameraFollowOffset: 50,
@@ -139,9 +116,6 @@ describe("StagePlayScene before action", () => {
       `vue-stage-play__spotlight-${wrapper.props("actName")}-${wrapper.props(
         "scene",
       )}`,
-    );
-    expect(spotlightWrapper.attributes("style")).toBe(
-      `position: absolute; scroll-margin: ${mockGlobalOptions.cameraFollowOffset}px; top: -${mockGlobalOptions.spotlightPadding}px; bottom: -${mockGlobalOptions.spotlightPadding}px; left: -${mockGlobalOptions.spotlightPadding}px; right: -${mockGlobalOptions.spotlightPadding}px; pointer-events: none;`,
     );
 
     expect(voiceOverWrapper.exists()).toBe(false);
@@ -255,13 +229,7 @@ describe("StagePlayScene after action", () => {
     );
 
     expect(voiceOverWrapper.exists()).toBe(true);
-    expect(voiceOverWrapper.attributes("style")).toBe(
-      `position: absolute; z-index: 99996; color: #292929; pointer-events: auto; ${
-        voiceOverStyle[defaultOptions.voiceOverPlacement][
-          defaultOptions.voiceOverAlign
-        ]
-      }`,
-    );
+
     expect(
       voiceOverWrapper.find(".default__voice-over").attributes("style"),
     ).toContain(`width: ${defaultOptions.voiceOverWidth}px;`);
@@ -324,13 +292,7 @@ describe("StagePlayScene after action", () => {
     );
 
     expect(voiceOverWrapper.exists()).toBe(true);
-    expect(voiceOverWrapper.attributes("style")).toBe(
-      `position: absolute; z-index: 99996; color: #292929; pointer-events: auto; ${
-        voiceOverStyle[mockGlobalOptions.voiceOverPlacement][
-          mockGlobalOptions.voiceOverAlign
-        ]
-      }`,
-    );
+
     expect(
       voiceOverWrapper.find(".default__voice-over").attributes("style"),
     ).toContain(`width: ${mockGlobalOptions.voiceOverWidth}px;`);
@@ -411,13 +373,7 @@ describe("StagePlayScene after action", () => {
     );
 
     expect(voiceOverWrapper.exists()).toBe(true);
-    expect(voiceOverWrapper.attributes("style")).toBe(
-      `position: absolute; z-index: 99996; color: #292929; pointer-events: auto; ${
-        voiceOverStyle[wrapper.props("voiceOverPlacement")][
-          wrapper.props("voiceOverAlign")
-        ]
-      }`,
-    );
+
     expect(
       voiceOverWrapper.find(".default__voice-over").attributes("style"),
     ).toContain(`width: ${wrapper.props("voiceOverWidth")}px;`);

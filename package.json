@@ -2,7 +2,7 @@
   "name": "vue-stage-play",
   "description": "Designing a guided tour for your website with vue components, much like directing a stage play.",
   "private": false,
-  "version": "0.4.0",
+  "version": "0.5.0",
   "author": "max.lee <f820602h@gmail.com>",
   "license": "MIT",
   "homepage": "https://github.com/f820602h/vue-stage-play#readme",
@@ -40,6 +40,7 @@
     "docs:preview": "vitepress preview doc"
   },
   "dependencies": {
+    "@floating-ui/vue": "^1.0.2",
     "@vueuse/core": "^10.4.1",
     "vitepress": "^1.0.0-rc.20",
     "vue": "^3.3.4"
