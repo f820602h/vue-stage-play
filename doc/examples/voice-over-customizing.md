@@ -16,19 +16,19 @@ This example demonstrates the utilization of a customized tooltip.
 
   defineProps({
     title: {
-      type: string
+      type: String,
       required: true
     },
     content: {
-      type: string
+      type: String,
       required: true
     },
     hasPrevScene: {
-      type: boolean,
+      type: Boolean,
       required: true
-    }
+    },
     hasNextScene: {
-      type: boolean,
+      type: Boolean,
       required: true
     }
   });
